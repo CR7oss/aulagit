@@ -1,3056 +1,2873 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Klick Kwiz · Banco de Questões Fatec</title>
+  <title>Klick Kwiz · Banco de Questões Vestibulares</title>
+  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-          },
-          colors: {
-            fatec: {
-              50: '#eef4ff',
-              100: '#dce7ff',
-              200: '#c0d4ff',
-              500: '#2563eb',
-              600: '#1d4ed8',
-              700: '#1e40af',
-              800: '#1e3a8a',
-              900: '#172554',
-            }
-          }
-        }
-      }
-    };
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
   <style>
-    /* Ajustes finos de rolagem e transições suaves */
-    html {
-      scroll-behavior: smooth;
+    /* Variáveis de Design Tokens (Tema Dark Navy) */
+    :root {
+      --bg: #060E2B;
+      --surface: #10183F;
+      --surface-2: #162256;
+      --text: #F1F5F9;
+      --text-muted: #94A3B8;
+      --border: rgba(96, 165, 250, 0.18);
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --shadow: 0 16px 40px -12px rgba(2, 6, 23, 0.85);
+      --success: #10B981;
+      --danger: #EF4444;
+      --warning: #F59E0B;
     }
-    .no-scrollbar::-webkit-scrollbar {
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(124, 58, 237, 0.12), transparent 45%),
+        radial-gradient(circle at 90% 85%, rgba(37, 99, 235, 0.12), transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .font-brand {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+
+    /* Superfícies & Glassmorphism Refinado */
+    .kk-card {
+      background: linear-gradient(135deg, rgba(16, 24, 63, 0.85) 0%, rgba(11, 22, 53, 0.9) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+    .kk-card:hover {
+      border-color: rgba(59, 130, 246, 0.35);
+    }
+
+    .kk-card-subtle {
+      background: rgba(22, 34, 86, 0.5);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .kk-topbar {
+      background: rgba(6, 14, 43, 0.82);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    /* Botões */
+    .kk-btn-primary {
+      background: linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%);
+      color: #FFFFFF;
+      font-weight: 600;
+      border-radius: 12px;
+      transition: all 0.22s ease;
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.4);
+    }
+    .kk-btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 50%, #2563EB 100%);
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 22px rgba(59, 130, 246, 0.55);
+    }
+    .kk-btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .kk-btn-amber {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      color: #060E2B;
+      font-weight: 800;
+      border-radius: 12px;
+      transition: all 0.22s ease;
+      box-shadow: 0 4px 18px rgba(245, 158, 11, 0.35);
+    }
+    .kk-btn-amber:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 22px rgba(245, 158, 11, 0.5);
+    }
+
+    .kk-btn-outline {
+      background: rgba(22, 34, 86, 0.6);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-weight: 600;
+      border-radius: 12px;
+      transition: all 0.22s ease;
+    }
+    .kk-btn-outline:hover:not(:disabled) {
+      border-color: #60A5FA;
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    /* Inputs e Selects */
+    .kk-input {
+      background: rgba(16, 24, 63, 0.7);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 0.65rem 0.95rem;
+      font-size: 0.9rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .kk-input:focus {
+      outline: none;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.28);
+    }
+
+    /* Navegação SPA */
+    .view-section {
       display: none;
+      animation: fadeSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .view-section.active {
+      display: block;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fade-in {
-      animation: fadeIn 0.25s ease-out forwards;
+
+    .nav-link {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.5rem 0.8rem;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
     }
+    .nav-link:hover {
+      color: var(--text);
+      background: rgba(59, 130, 246, 0.12);
+    }
+    .nav-link.active {
+      background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+      color: #FFFFFF;
+      box-shadow: 0 3px 12px rgba(37, 99, 235, 0.45);
+    }
+
+    /* Hero Brand Navy Fiel */
+    .brand-hero {
+      background:
+        radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 15% 85%, rgba(124, 58, 237, 0.22) 0%, transparent 55%),
+        radial-gradient(circle at 85% 80%, rgba(37, 99, 235, 0.25) 0%, transparent 50%),
+        linear-gradient(160deg, #070F30 0%, #0C1A52 55%, #070F30 100%);
+      border: 1px solid rgba(96, 165, 250, 0.28);
+      color: #FFFFFF;
+    }
+
+    /* Alternativas de Questão */
+    .alt-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      width: 100%;
+      text-align: left;
+      padding: 1rem 1.1rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: rgba(22, 34, 86, 0.45);
+      color: var(--text);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .alt-option:hover:not(.locked) {
+      border-color: #60A5FA;
+      background: rgba(59, 130, 246, 0.1);
+      transform: translateX(2px);
+    }
+    .alt-option.selected {
+      border-color: #3B82F6;
+      background: rgba(37, 99, 235, 0.2);
+      box-shadow: 0 0 0 1px #3B82F6;
+    }
+    .alt-option.correct {
+      border-color: #10B981 !important;
+      background: rgba(16, 185, 129, 0.18) !important;
+    }
+    .alt-option.wrong {
+      border-color: #EF4444 !important;
+      background: rgba(239, 68, 68, 0.16) !important;
+    }
+    .alt-option.eliminated {
+      opacity: 0.4;
+      text-decoration: line-through;
+    }
+    .alt-key {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: rgba(11, 22, 53, 0.8);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+    .alt-option.selected .alt-key {
+      background: #2563EB;
+      color: #FFFFFF;
+      border-color: #2563EB;
+    }
+    .alt-option.correct .alt-key {
+      background: #10B981;
+      color: #FFFFFF;
+      border-color: #10B981;
+    }
+    .alt-option.wrong .alt-key {
+      background: #EF4444;
+      color: #FFFFFF;
+      border-color: #EF4444;
+    }
+
+    @keyframes pulseRays {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.72; transform: scale(1.04); }
+    }
+    .bulb-rays {
+      transform-origin: 60px 38px;
+      animation: pulseRays 3s ease-in-out infinite;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.4); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.65); }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col transition-colors duration-200">
+<body class="antialiased selection:bg-blue-600 selection:text-white">
 
-  <!-- Toast / Notificação Flutuante (substitui qualquer alert) -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-  <!-- Modal de Confirmação Customizado (substitui confirm) -->
-  <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-fade-in">
-      <h3 id="confirm-title" class="text-lg font-bold text-slate-900 dark:text-white mb-2">Confirmar ação</h3>
-      <p id="confirm-message" class="text-sm text-slate-600 dark:text-slate-300 mb-6">Tem certeza que deseja continuar?</p>
-      <div class="flex justify-end gap-3">
-        <button id="confirm-cancel" class="px-4 py-2 rounded-xl text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Cancelar</button>
-        <button id="confirm-ok" class="px-4 py-2 rounded-xl text-sm font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">Confirmar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de Autenticação (Entrar / Criar Conta / Conta Demo) -->
-  <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/65 backdrop-blur-sm p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl animate-fade-in relative">
-      <button onclick="closeAuthModal()" aria-label="Fechar modal" class="absolute top-4 right-4 w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-sm font-bold transition">
-        ✕
+  <!-- ==================== TOPBAR FIXA ==================== -->
+  <header class="kk-topbar sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <!-- Marca / Logo Compacto -->
+      <button type="button" data-nav="inicio" class="flex items-center gap-2.5 text-left group focus:outline-none">
+        <div class="w-10 h-10 rounded-xl bg-[#060E2B] border border-blue-500/40 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+          <svg viewBox="0 0 120 110" class="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g stroke="#F59E0B" stroke-width="5" stroke-linecap="round">
+              <line x1="60" y1="6" x2="60" y2="14" />
+              <line x1="32" y1="15" x2="38" y2="21" />
+              <line x1="88" y1="15" x2="82" y2="21" />
+            </g>
+            <g stroke="#38BDF8" stroke-width="4.5" stroke-linecap="round">
+              <line x1="21" y1="33" x2="29" y2="35" />
+              <line x1="99" y1="33" x2="91" y2="35" />
+            </g>
+            <path d="M60 19C46.5 19 37 28.5 37 40.5C37 48.2 41.2 54.4 46.5 58.6C48.3 60 49.5 62.1 49.8 64.4H70.2C70.5 62.1 71.7 60 73.5 58.6C78.8 54.4 83 48.2 83 40.5C83 28.5 73.5 19 60 19Z" stroke="#F59E0B" stroke-width="6" fill="#060E2B"/>
+            <polygon points="55,33 55,49 69,41" fill="#F59E0B" />
+            <rect x="49" y="67" width="22" height="5.5" rx="2.7" fill="#3B82F6" />
+            <rect x="52" y="74.5" width="16" height="5" rx="2.5" fill="#2563EB" />
+            <path d="M16 66C31 63 46 68 60 80C74 68 89 63 104 66V87C89 84 74 89 60 99C46 89 31 84 16 87V66Z" fill="#FFFFFF" />
+            <path d="M10 73L16 70V87C31 84 46 89 60 99C74 89 89 84 104 87V70L110 73V94C93 90 76 94 60 104C44 94 27 90 10 94V73Z" fill="#2563EB" />
+          </svg>
+        </div>
+        <div>
+          <div class="font-brand font-extrabold text-lg leading-none tracking-tight flex items-center">
+            <span>kl</span><span class="relative inline-block">i<span class="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-amber-500"></span></span><span>ck</span>
+            <span class="text-blue-500 ml-1">kwiz</span>
+          </div>
+          <div class="text-[11px] font-semibold tracking-wider uppercase opacity-70 mt-0.5">Vestibulares</div>
+        </div>
       </button>
 
-      <div class="flex items-center gap-2.5 mb-5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-fatec-600 to-indigo-700 text-white font-extrabold text-base flex items-center justify-center">
-          K
-        </div>
-        <div>
-          <h3 class="text-lg font-extrabold text-slate-900 dark:text-white leading-tight">Área do Vestibulando</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Salve seu progresso, revisões e simulados</p>
-        </div>
-      </div>
+      <!-- Navegação Desktop -->
+      <nav class="hidden lg:flex items-center gap-1" aria-label="Navegação principal">
+        <button type="button" class="nav-link active" data-nav="inicio">Início</button>
+        <button type="button" class="nav-link" data-nav="treinar">Treinar</button>
+        <button type="button" class="nav-link" data-nav="simulado">Simulado</button>
+        <button type="button" class="nav-link" data-nav="roteiro">Roteiro</button>
+        <button type="button" class="nav-link" data-nav="desempenho">Desempenho</button>
+        <button type="button" class="nav-link" data-nav="admin">Admin</button>
+        <button type="button" class="nav-link" data-nav="sobre">Sobre</button>
+      </nav>
 
-      <!-- Abas Entrar / Criar Conta -->
-      <div class="grid grid-cols-2 gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-5">
-        <button id="auth-tab-login" type="button" onclick="switchAuthTab('login')" class="py-2 rounded-lg text-xs sm:text-sm font-bold bg-white dark:bg-slate-900 text-fatec-700 dark:text-fatec-300 shadow-sm transition">
-          Entrar
-        </button>
-        <button id="auth-tab-register" type="button" onclick="switchAuthTab('register')" class="py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition">
-          Criar Conta
-        </button>
-      </div>
+      <!-- Ofensiva + Usuário -->
+      <div class="flex items-center gap-2.5">
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl kk-card-subtle text-xs font-bold" title="Sua ofensiva de dias consecutivos de estudo">
+          <span class="flex items-center gap-1 text-amber-500">🔥 <span id="topStreak">1</span>d</span>
+        </div>
 
-      <!-- Formulário de Login -->
-      <form id="auth-login-form" onsubmit="handleLoginSubmit(event)" class="space-y-3.5">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">E-mail</label>
-          <input type="email" id="login-email" required placeholder="seuemail@exemplo.com" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500" />
+        <!-- Área do Usuário (Visitante) -->
+        <div id="guestControls" class="flex items-center gap-2">
+          <button type="button" id="btnOpenAuth" class="kk-btn-primary px-4 py-2 text-xs sm:text-sm">Entrar</button>
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Senha</label>
-          <input type="password" id="login-password" required placeholder="••••••" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500" />
-        </div>
-        <button type="submit" class="w-full py-3 rounded-xl font-bold text-sm bg-fatec-600 hover:bg-fatec-700 text-white shadow-md shadow-fatec-600/20 transition">
-          Entrar na minha conta
-        </button>
-      </form>
 
-      <!-- Formulário de Cadastro -->
-      <form id="auth-register-form" onsubmit="handleRegisterSubmit(event)" class="hidden space-y-3">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nome completo</label>
-          <input type="text" id="reg-name" required placeholder="Ex.: Lucas Almeida" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500" />
+        <!-- Área do Usuário (Logado) -->
+        <div id="userControls" class="hidden items-center gap-2">
+          <button type="button" data-nav="perfil" class="flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full kk-card-subtle hover:border-blue-500 transition-all">
+            <span id="topAvatar" class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-amber-500 text-white font-extrabold text-xs grid place-items-center">KV</span>
+            <span id="topUserName" class="text-xs font-bold max-w-[90px] truncate hidden md:inline">Estudante</span>
+          </button>
+          <button type="button" id="btnLogout" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg opacity-75 hover:opacity-100 hover:bg-red-500/15 hover:text-red-400 transition-colors">Sair</button>
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">E-mail</label>
-          <input type="email" id="reg-email" required placeholder="lucas@exemplo.com" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Curso pretendido na Fatec</label>
-          <select id="reg-course" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500">
-            <option value="Análise e Desenvolvimento de Sistemas (ADS)">Análise e Desenvolvimento de Sistemas (ADS)</option>
-            <option value="Desenvolvimento de Software Multiplataforma (DSM)">Desenvolvimento de Software Multiplataforma (DSM)</option>
-            <option value="Gestão Empresarial">Gestão Empresarial</option>
-            <option value="Logística">Logística</option>
-            <option value="Segurança da Informação">Segurança da Informação</option>
-            <option value="Ciência de Dados">Ciência de Dados</option>
-            <option value="Gestão da Tecnologia da Informação">Gestão da Tecnologia da Informação</option>
-            <option value="Comércio Exterior">Comércio Exterior</option>
-            <option value="Outro curso Fatec">Outro curso Fatec</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Senha (mín. 4 caracteres)</label>
-          <input type="password" id="reg-password" minlength="4" required placeholder="Crie uma senha" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500" />
-        </div>
-        <button type="submit" class="w-full py-3 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 transition">
-          Criar conta e começar
-        </button>
-      </form>
 
-      <!-- Divisor e Acesso Rápido Demo -->
-      <div class="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2.5">
-        <button type="button" onclick="loginDemoAccount()" class="w-full py-2.5 px-3 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-800 transition flex items-center justify-center gap-2">
-          <span>⚡ Entrar como Visitante / Conta Demo (aluno@fatec.sp.gov.br)</span>
+        <!-- Menu Mobile Trigger -->
+        <button type="button" id="btnMobileMenu" class="lg:hidden p-2.5 rounded-xl kk-card-subtle text-base" aria-label="Abrir menu">
+          ☰
         </button>
       </div>
     </div>
-  </div>
 
-  <!-- Cabeçalho Fixo -->
-  <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 gap-2 sm:gap-3">
-        <!-- Logo e Título -->
-        <button onclick="navigateTo('inicio')" class="flex items-center gap-2.5 sm:gap-3 text-left group focus:outline-none shrink-0">
-          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-fatec-600 to-indigo-700 text-white font-extrabold text-lg sm:text-xl flex items-center justify-center shadow-md shadow-fatec-600/20 group-hover:scale-105 transition-transform">
-            K
-          </div>
-          <div>
-            <div class="font-extrabold text-sm sm:text-lg leading-tight tracking-tight text-slate-900 dark:text-white">
-              Klick Kwiz
-            </div>
-            <div class="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400">
-              Banco de Questões Fatec
-            </div>
-          </div>
-        </button>
-
-        <!-- Navegação Desktop -->
-        <nav id="desktop-nav" class="hidden xl:flex items-center gap-1 bg-slate-100/80 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200/70 dark:border-slate-700/70">
-          <!-- Renderizado via JS -->
-        </nav>
-
-        <!-- Área de Conta + Botão Tema Escuro / Claro -->
-        <div class="flex items-center gap-2">
-          <!-- Estado Deslogado -->
-          <button id="header-login-btn" onclick="openAuthModal('login')" class="px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-fatec-600 hover:bg-fatec-700 text-white shadow-sm transition flex items-center gap-1.5 shrink-0">
-            <span>👤</span>
-            <span>Entrar / Conta</span>
-          </button>
-
-          <!-- Estado Logado -->
-          <div id="header-user-box" class="hidden relative">
-            <button onclick="toggleUserDropdown()" class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition">
-              <span id="header-user-avatar" class="w-7 h-7 rounded-lg bg-gradient-to-br from-fatec-600 to-indigo-600 text-white text-xs font-extrabold flex items-center justify-center">
-                AL
-              </span>
-              <span id="header-user-name" class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 max-w-[95px] sm:max-w-[130px] truncate">
-                Aluno
-              </span>
-              <span class="text-[10px] text-slate-500">▼</span>
-            </button>
-
-            <!-- Dropdown do Usuário -->
-            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-3 z-50 animate-fade-in">
-              <div class="px-2 py-2 border-b border-slate-100 dark:border-slate-800 mb-2">
-                <div id="dropdown-user-fullname" class="text-sm font-bold text-slate-900 dark:text-white truncate">Aluno Fatec</div>
-                <div id="dropdown-user-email" class="text-xs text-slate-500 dark:text-slate-400 truncate">aluno@fatec.sp.gov.br</div>
-                <div id="dropdown-user-course" class="mt-1 inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold bg-fatec-50 dark:bg-fatec-900/40 text-fatec-700 dark:text-fatec-300">
-                  ADS
-                </div>
-              </div>
-              <button onclick="toggleUserDropdown(); navigateTo('desempenho')" class="w-full text-left px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2">
-                <span>📈</span> Meu Desempenho e Perfil
-              </button>
-              <button onclick="toggleUserDropdown(); navigateTo('roteiro')" class="w-full text-left px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2">
-                <span>🗺️</span> Meu Roteiro de Estudos
-              </button>
-              <button onclick="logoutUser()" class="w-full text-left px-3 py-2 mt-1 rounded-xl text-xs sm:text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition flex items-center gap-2">
-                <span>🚪</span> Sair da conta
-              </button>
-            </div>
-          </div>
-
-          <button id="theme-toggle" onclick="toggleTheme()" class="px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition flex items-center gap-1.5 shrink-0">
-            <span id="theme-icon">🌙</span>
-            <span id="theme-label" class="hidden sm:inline">Escuro</span>
-          </button>
-        </div>
+    <!-- Navegação Mobile Dropdown -->
+    <div id="mobileMenuDrawer" class="hidden lg:hidden border-t border-blue-500/20 px-4 py-3 space-y-1 bg-[#060E2B]/95 text-white">
+      <div class="grid grid-cols-2 gap-1.5">
+        <button type="button" class="nav-link text-left active" data-nav="inicio">🏠 Início</button>
+        <button type="button" class="nav-link text-left" data-nav="treinar">🧩 Treinar Questões</button>
+        <button type="button" class="nav-link text-left" data-nav="simulado">⏱️ Simulado</button>
+        <button type="button" class="nav-link text-left" data-nav="roteiro">📅 Roteiro</button>
+        <button type="button" class="nav-link text-left" data-nav="desempenho">📊 Desempenho</button>
+        <button type="button" class="nav-link text-left" data-nav="perfil">👤 Meu Perfil</button>
+        <button type="button" class="nav-link text-left" data-nav="admin">⚙️ Admin Questões</button>
+        <button type="button" class="nav-link text-left" data-nav="sobre">ℹ️ Sobre & Contato</button>
       </div>
-
-      <!-- Navegação Mobile / Tablet (Horizontal Scroll suave) -->
-      <nav id="mobile-nav" class="xl:hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2.5 pt-1">
-        <!-- Renderizado via JS -->
-      </nav>
     </div>
   </header>
 
-  <!-- Conteúdo Principal -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+  <!-- ==================== CONTEÚDO PRINCIPAL SPA ==================== -->
+  <main class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
 
-    <!-- ==================== ABA 1: INÍCIO ==================== -->
-    <section id="tab-inicio" class="tab-section space-y-8 animate-fade-in">
-      <!-- Banner de Boas-Vindas Personalizado (quando logado) -->
-      <div id="welcome-user-banner" class="hidden bg-white dark:bg-slate-900 border border-fatec-200 dark:border-fatec-800/70 rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
-        <div class="flex items-center gap-3">
-          <div id="welcome-user-avatar" class="w-10 h-10 rounded-xl bg-fatec-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0">
-            AL
-          </div>
+    <!-- ==================== 1. VIEW: INÍCIO ==================== -->
+    <section id="view-inicio" class="view-section active space-y-8">
+      <!-- Banner Boas-Vindas Personalizado (se logado) -->
+      <div id="homeUserBanner" class="hidden kk-card p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 border-l-4 border-l-amber-500">
+        <div class="flex items-center gap-3.5">
+          <div id="bannerAvatar" class="w-11 h-11 rounded-full bg-gradient-to-br from-blue-600 to-amber-500 text-white font-extrabold text-base grid place-items-center shadow">KV</div>
           <div>
-            <div id="welcome-user-greeting" class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-              Olá, Aluno! Bom treino hoje.
-            </div>
-            <div id="welcome-user-sub" class="text-xs text-slate-500 dark:text-slate-400">
-              Foco na aprovação · Curso pretendido: Análise e Desenvolvimento de Sistemas
-            </div>
+            <h2 id="bannerTitle" class="font-bold text-sm sm:text-base">Bem-vindo de volta!</h2>
+            <p id="bannerSubtitle" class="text-xs opacity-75">Meta diária: 0/10 questões concluídas hoje.</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-            ✓ Progresso sincronizado na conta
-          </span>
+          <button type="button" data-nav="perfil" class="kk-btn-outline px-3 py-1.5 text-xs">Ajustar Meta</button>
+          <button type="button" data-nav="treinar" class="kk-btn-primary px-3.5 py-1.5 text-xs">Continuar Treino →</button>
         </div>
       </div>
 
-      <!-- Hero Banner -->
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-fatec-900 to-indigo-950 text-white p-6 sm:p-10 lg:p-12 shadow-xl border border-slate-800">
-        <div class="absolute -top-24 -right-24 w-72 h-72 bg-fatec-500/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      <!-- HERO OFICIAL COM IDENTIDADE DO LOGOTIPO -->
+      <div class="brand-hero rounded-3xl p-7 sm:p-12 text-center shadow-2xl relative overflow-hidden">
+        <!-- Logotipo Vetorial Completo -->
+        <div class="max-w-md mx-auto flex flex-col items-center">
+          <svg viewBox="0 0 260 155" class="w-52 sm:w-64 h-auto drop-shadow-[0_10px_25px_rgba(245,158,11,0.22)]" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logotipo Klick Kwiz">
+            <!-- Raios superiores laranjas -->
+            <g class="bulb-rays" stroke="#F59E0B" stroke-width="5.5" stroke-linecap="round">
+              <line x1="130" y1="8" x2="130" y2="21" />
+              <line x1="94" y1="21" x2="103" y2="30" />
+              <line x1="166" y1="21" x2="157" y2="30" />
+            </g>
+            <!-- Raios laterais azul-celeste -->
+            <g stroke="#38BDF8" stroke-width="5" stroke-linecap="round">
+              <line x1="80" y1="48" x2="92" y2="51" />
+              <line x1="180" y1="48" x2="168" y2="51" />
+            </g>
+            <!-- Bulbo da Lâmpada Laranja -->
+            <path d="M130 28C111.5 28 98 41 98 58C98 68.5 103.6 77.2 111 83C113.5 85 115 88 115.5 91.2H144.5C145 88 146.5 85 149 83C156.4 77.2 162 68.5 162 58C162 41 148.5 28 130 28Z" stroke="#F59E0B" stroke-width="6.5" fill="#060E2B"/>
+            <!-- Triângulo Play no centro da Lâmpada -->
+            <polygon points="122,47 122,70 143,58.5" fill="#F59E0B" />
+            <!-- Rosca/Base azul da lâmpada -->
+            <rect x="114" y="95" width="32" height="6.5" rx="3.2" fill="#3B82F6" />
+            <rect x="118" y="104.5" width="24" height="6" rx="3" fill="#2563EB" />
+            <!-- Páginas Brancas do Livro Aberto -->
+            <path d="M68 95C89 91 110 98 130 114C150 98 171 91 192 95V125C171 121 150 128 130 142C110 128 89 121 68 125V95Z" fill="#FFFFFF" />
+            <!-- Vinco central sutil do livro -->
+            <path d="M130 114V142" stroke="#CBD5E1" stroke-width="2" />
+            <!-- Capa Azul do Livro Aberto -->
+            <path d="M58 104L68 100V125C89 121 110 128 130 142C150 128 171 121 192 125V100L202 104V135C178 130 153 136 130 150C107 136 82 130 58 135V104Z" fill="#2563EB" />
+          </svg>
 
-        <div class="relative z-10 max-w-3xl space-y-5">
-          <div class="flex flex-wrap items-center gap-2.5">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-fatec-500/25 text-fatec-100 border border-fatec-400/30">
-              Vestibular Fatec · Humanas
-            </span>
-            <span class="text-xs font-bold tracking-widest uppercase text-amber-300">
-              ESTUDE • PRATIQUE • EVOLUA
-            </span>
-          </div>
-
-          <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
-            Domine as questões de Humanas da Fatec com prática inteligente.
+          <!-- Tipografia Klick Kwiz -->
+          <h1 class="font-brand font-extrabold text-4xl sm:text-6xl tracking-tight mt-1 leading-none select-none">
+            <span class="text-white">kl</span><span class="relative inline-block text-white">ı<span class="absolute -top-0.5 sm:top-0 left-1/2 -translate-x-1/2 w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-amber-500"></span></span><span class="text-white">ck</span>
+            <span class="text-[#3B82F6] ml-1.5">kwiz</span>
           </h1>
 
-          <p class="text-sm sm:text-base lg:text-lg text-slate-200 leading-relaxed max-w-2xl">
-            Treine com provas reais da Fatec, faça simulados cronometrados e acompanhe seu desempenho matéria por matéria. Tudo salvo no seu navegador.
-          </p>
-
-          <div class="flex flex-wrap items-center gap-3 pt-2">
-            <button onclick="navigateTo('treinar')" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-fatec-500 hover:bg-fatec-600 text-white shadow-lg shadow-fatec-600/30 transition transform active:scale-95">
-              Começar a treinar
-            </button>
-            <button onclick="navigateTo('simulado')" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm transition transform active:scale-95">
-              Fazer simulado
-            </button>
+          <!-- Slogan com pontos laranjas -->
+          <div class="flex items-center justify-center gap-2.5 sm:gap-3.5 text-xs sm:text-sm font-extrabold tracking-[0.22em] text-white/95 uppercase mt-3">
+            <span>ESTUDE</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span>PRATIQUE</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span>EVOLUA</span>
           </div>
 
-          <div class="pt-2 flex items-center gap-2 text-xs sm:text-sm text-fatec-200 font-medium">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="hero-bank-count">30 questões de Humanas no banco · gabarito conferido</span>
+          <!-- Pílula Azul do Logotipo -->
+          <div class="mt-3.5 inline-block bg-[#2563EB] text-white font-extrabold text-[11px] sm:text-xs tracking-[0.14em] uppercase px-5 py-1.5 rounded-full shadow-lg shadow-blue-600/40">
+            APRENDER NUNCA FOI TÃO FÁCIL
+          </div>
+        </div>
+
+        <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mt-6 leading-relaxed">
+          Prepare-se com questões oficiais e inéditas no estilo exato dos <strong class="text-white">Vestibulares</strong>. Treine por disciplina, simule o tempo real de prova e domine os temas de peso 2 do seu curso.
+        </p>
+
+        <!-- Botões de Ação Principais -->
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-7">
+          <button type="button" data-nav="treinar" class="kk-btn-amber px-6 py-3 text-sm sm:text-base flex items-center gap-2">
+            <span>🚀 Começar a Treinar</span>
+          </button>
+          <button type="button" data-nav="simulado" class="kk-btn-primary px-6 py-3 text-sm sm:text-base flex items-center gap-2">
+            <span>⏱️ Simulado Cronometrado</span>
+          </button>
+          <button type="button" data-nav="roteiro" class="px-5 py-3 rounded-xl border border-blue-400/40 bg-white/5 hover:bg-white/10 text-white font-semibold text-sm sm:text-base transition-all">
+            📅 Roteiro 8 Semanas
+          </button>
+        </div>
+
+        <!-- Barra de Métricas Rápidas -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto mt-8 pt-6 border-t border-white/10 text-left sm:text-center">
+          <div class="bg-white/5 rounded-xl p-3">
+            <div class="text-xl sm:text-2xl font-extrabold text-amber-400" id="heroTotalQuestions">24</div>
+            <div class="text-xs text-slate-300">Questões Comentadas</div>
+          </div>
+          <div class="bg-white/5 rounded-xl p-3">
+            <div class="text-xl sm:text-2xl font-extrabold text-blue-400">9 Áreas</div>
+            <div class="text-xs text-slate-300">Matriz Completa Vestibulares</div>
+          </div>
+          <div class="bg-white/5 rounded-xl p-3">
+            <div class="text-xl sm:text-2xl font-extrabold text-emerald-400" id="heroUserSolved">0</div>
+            <div class="text-xs text-slate-300">Resolvidas por Você</div>
+          </div>
+          <div class="bg-white/5 rounded-xl p-3">
+            <div class="text-xl sm:text-2xl font-extrabold text-purple-400" id="heroUserAccuracy">0%</div>
+            <div class="text-xs text-slate-300">Seu Aproveitamento</div>
           </div>
         </div>
       </div>
 
-      <!-- 3 Cards de Destaque -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div onclick="navigateTo('treinar')" class="cursor-pointer group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-fatec-500 dark:hover:border-fatec-500 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-          <div class="w-12 h-12 rounded-2xl bg-fatec-50 dark:bg-fatec-900/40 text-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            🧩
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1.5">Quizzes</h3>
-          <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            Treinos por prova e matéria, com correção imediata ou ao final.
-          </p>
+      <!-- 4 PILARES DO MÉTODO KLICK KWIZ -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="kk-card p-5 hover:border-blue-500">
+          <div class="w-11 h-11 rounded-xl bg-blue-500/15 text-blue-400 grid place-items-center text-xl mb-3">🧩</div>
+          <h3 class="font-bold text-base mb-1">Treino Inteligente</h3>
+          <p class="text-xs opacity-75 leading-relaxed">Filtre por matéria, edição da prova de Vestibulares, dificuldade e elimine alternativas descartadas como na prova real.</p>
         </div>
-
-        <div onclick="startErrorReviewFromHome()" class="cursor-pointer group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-          <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-900/30 text-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            🔁
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1.5">Revisões</h3>
-          <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            Refaça só as questões que você errou e consolide o conteúdo.
-          </p>
+        <div class="kk-card p-5 hover:border-amber-500">
+          <div class="w-11 h-11 rounded-xl bg-amber-500/15 text-amber-400 grid place-items-center text-xl mb-3">🔁</div>
+          <h3 class="font-bold text-base mb-1">Caderno de Erros</h3>
+          <p class="text-xs opacity-75 leading-relaxed">Cada questão errada fica salva automaticamente para você revisar e transformar pontos fracos em acertos.</p>
         </div>
-
-        <div onclick="navigateTo('desempenho')" class="cursor-pointer group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 text-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            📈
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1.5">Progresso</h3>
-          <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            Veja o percentual de acertos por matéria e a evolução das tentativas.
-          </p>
+        <div class="kk-card p-5 hover:border-emerald-500">
+          <div class="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-400 grid place-items-center text-xl mb-3">⏱️</div>
+          <h3 class="font-bold text-base mb-1">Simulados Reais</h3>
+          <p class="text-xs opacity-75 leading-relaxed">Cronômetro regressivo, cartão de navegação rápida e diagnóstico detalhado de desempenho por disciplina.</p>
+        </div>
+        <div class="kk-card p-5 hover:border-purple-500">
+          <div class="w-11 h-11 rounded-xl bg-purple-500/15 text-purple-400 grid place-items-center text-xl mb-3">📊</div>
+          <h3 class="font-bold text-base mb-1">Evolução & Analytics</h3>
+          <p class="text-xs opacity-75 leading-relaxed">Acompanhe gráficos detalhados por matéria, identifique seus pontos fortes e monitore o histórico dos seus simulados.</p>
         </div>
       </div>
 
-      <!-- Mini Quiz de Boas-Vindas -->
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-200 dark:border-slate-800">
+      <!-- MINI QUIZ DE BOAS-VINDAS INTERATIVO -->
+      <div class="kk-card p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-blue-500/15">
           <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-              Mini quiz de boas-vindas
-            </h2>
-            <p class="text-sm text-slate-600 dark:text-slate-400">
-              Quatro questões de Humanas para descobrir seu nível inicial.
-            </p>
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 mb-1">Desafio Rápido · 4 Questões</span>
+            <h2 class="text-xl sm:text-2xl font-extrabold">Mini Quiz Diagnóstico Vestibulares</h2>
+            <p class="text-xs sm:text-sm opacity-75 mt-0.5">Teste seus conhecimentos agora mesmo e receba gabarito comentado instantâneo.</p>
           </div>
-          <div class="flex items-center gap-2.5">
-            <span id="mini-quiz-status" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
-              Em andamento
-            </span>
-            <span id="mini-quiz-counter" class="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
-              Pergunta 1 de 4 · Sintaxe
-            </span>
+          <div class="flex items-center gap-2">
+            <span id="miniQuizBadge" class="px-3 py-1 rounded-full text-xs font-bold kk-card-subtle">Questão 1 de 4</span>
+            <button type="button" id="btnResetMiniQuiz" class="kk-btn-outline px-3 py-1.5 text-xs">Reiniciar</button>
           </div>
         </div>
-
-        <!-- Corpo do Mini Quiz -->
-        <div id="mini-quiz-body" class="pt-6 space-y-6">
-          <p id="mini-quiz-question" class="text-base sm:text-lg font-medium text-slate-900 dark:text-slate-100 leading-relaxed">
-            <!-- Preenchido via JS -->
-          </p>
-
-          <div id="mini-quiz-options" class="grid grid-cols-1 gap-3">
-            <!-- Alternativas A-E via JS -->
-          </div>
-
-          <!-- Feedback da resposta -->
-          <div id="mini-quiz-feedback" class="hidden rounded-2xl p-4 text-sm leading-relaxed border"></div>
-
-          <!-- Rodapé do Mini Quiz -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-            <span id="mini-quiz-hint" class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
-              Escolha uma alternativa.
-            </span>
-            <div class="flex items-center gap-3">
-              <button id="mini-quiz-next" onclick="handleMiniQuizNext()" disabled class="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm bg-fatec-600 text-white hover:bg-fatec-700 disabled:opacity-40 disabled:cursor-not-allowed transition">
-                Próxima
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Resultado Final do Mini Quiz -->
-        <div id="mini-quiz-result" class="hidden pt-6 text-center space-y-5">
-          <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-fatec-100 dark:bg-fatec-900/50 text-3xl">
-            🎯
-          </div>
-          <div>
-            <h3 id="mini-quiz-score-title" class="text-2xl font-extrabold text-slate-900 dark:text-white">
-              Você acertou 4 de 4!
-            </h3>
-            <p id="mini-quiz-score-desc" class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-lg mx-auto">
-              Excelente ponto de partida! Continue praticando no banco completo de 30 questões da Fatec.
-            </p>
-          </div>
-          <div class="flex flex-wrap justify-center gap-3">
-            <button onclick="resetMiniQuiz()" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition">
-              Refazer mini quiz
-            </button>
-            <button onclick="navigateTo('treinar')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-fatec-600 hover:bg-fatec-700 text-white transition">
-              Ir para o banco completo
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Seção Por que o Klick Kwiz? -->
-      <div class="bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8">
-        <div class="max-w-2xl mb-6">
-          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-            Por que o Klick Kwiz?
-          </h2>
-          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Um método simples para quem prepara o vestibular da Fatec sem tempo sobrando.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex items-start gap-4">
-            <div class="w-10 h-10 rounded-xl bg-fatec-100 dark:bg-fatec-900/40 text-fatec-700 dark:text-fatec-300 font-bold flex items-center justify-center shrink-0">
-              ✓
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-900 dark:text-white text-base">Questões reais</h3>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Cada item vem de provas anteriores, com gabarito conferido e explicação direta ao ponto.
-              </p>
-            </div>
-          </div>
-
-          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex items-start gap-4">
-            <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0">
-              ⏱
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-900 dark:text-white text-base">Simulado de verdade</h3>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                60 questões, 5 horas e navegação igual à prova oficial para você treinar ritmo e resistência.
-              </p>
-            </div>
-          </div>
-        </div>
+        <div id="miniQuizContainer" class="mt-6"></div>
       </div>
     </section>
 
-    <!-- ==================== ABA 2: TREINAR & REVISÕES ==================== -->
-    <section id="tab-treinar" class="tab-section hidden space-y-6 animate-fade-in">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <!-- ==================== 2. VIEW: TREINAR (BANCO DE QUESTÕES) ==================== -->
+    <section id="view-treinar" class="view-section space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Treinar Questões</h2>
-          <p class="text-sm text-slate-600 dark:text-slate-400">Filtre por matéria, escolha o modo de correção ou revise apenas seus erros.</p>
+          <h1 class="text-2xl sm:text-3xl font-extrabold">Banco de Questões Vestibulares</h1>
+          <p class="text-xs sm:text-sm opacity-75 mt-0.5">Use <kbd class="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-mono text-xs">A–E</kbd> para responder, <kbd class="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-mono text-xs">Enter</kbd> para confirmar ou clique na tesoura ✂️ para riscar alternativas.</p>
         </div>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <button id="btn-review-errors" onclick="toggleErrorReviewMode()" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition flex items-center gap-2 bg-white dark:bg-slate-900 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20">
-            <span>🔁 Modo Revisão (Só erradas: <span id="error-count-badge">0</span>)</span>
-          </button>
+        <div class="flex items-center gap-2">
+          <span id="trainFilteredCount" class="px-3 py-1.5 rounded-xl kk-card-subtle text-xs font-bold text-blue-400">24 questões</span>
         </div>
       </div>
 
       <!-- Barra de Filtros -->
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Matéria / Área</label>
-          <select id="filter-subject" onchange="applyTrainFilters()" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-fatec-500">
-            <option value="TODAS">Todas as matérias</option>
-          </select>
+      <div class="kk-card p-4 sm:p-5 space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <div>
+            <label class="block text-xs font-bold opacity-75 mb-1">Matéria</label>
+            <select id="filterSubject" class="kk-input">
+              <option value="ALL">Todas as Matérias</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold opacity-75 mb-1">Edição / Prova</label>
+            <select id="filterExam" class="kk-input">
+              <option value="ALL">Todas as Provas</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold opacity-75 mb-1">Dificuldade</label>
+            <select id="filterDifficulty" class="kk-input">
+              <option value="ALL">Todas</option>
+              <option value="Fácil">Fácil</option>
+              <option value="Média">Média</option>
+              <option value="Difícil">Difícil</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold opacity-75 mb-1">Status de Estudo</label>
+            <select id="filterStatus" class="kk-input">
+              <option value="ALL">Todas as Questões</option>
+              <option value="UNANSWERED">Não Respondidas</option>
+              <option value="WRONG">Somente Erradas (Revisão)</option>
+              <option value="FAVORITE">Favoritadas ⭐</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold opacity-75 mb-1">Buscar palavra-chave</label>
+            <input type="text" id="filterSearch" class="kk-input" placeholder="Ex: Vargas, algoritmo, clima..." />
+          </div>
         </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Modo de Correção</label>
-          <select id="filter-correction-mode" onchange="changeCorrectionMode()" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-fatec-500">
-            <option value="imediata">Correção imediata</option>
-            <option value="final">Correção ao final da lista</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Ordem</label>
-          <select id="filter-order" onchange="applyTrainFilters()" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-fatec-500">
-            <option value="padrao">Ordem do banco</option>
-            <option value="aleatoria">Embaralhar questões</option>
-          </select>
-        </div>
-
-        <div class="flex items-end">
-          <button onclick="resetTrainSession()" class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
-            Reiniciar treino atual
-          </button>
-        </div>
-      </div>
-
-      <!-- Status da Sessão de Treino -->
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-fatec-50/70 dark:bg-fatec-900/20 border border-fatec-200 dark:border-fatec-800/60 rounded-2xl px-5 py-3 text-sm">
-        <div class="font-semibold text-fatec-900 dark:text-fatec-200">
-          Exibindo <span id="train-total-filtered">30</span> questões · Questão <span id="train-current-num">1</span>
-        </div>
-        <div class="flex items-center gap-4 font-semibold">
-          <span class="text-emerald-600 dark:text-emerald-400">✓ Acertos: <span id="train-session-hits">0</span></span>
-          <span class="text-rose-600 dark:text-rose-400">✕ Erros: <span id="train-session-misses">0</span></span>
-        </div>
-      </div>
-
-      <!-- Card da Questão Atual no Treino -->
-      <div id="train-card" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-blue-500/10 text-xs">
           <div class="flex flex-wrap items-center gap-2">
-            <span id="train-q-subject" class="px-3 py-1 rounded-full text-xs font-bold bg-fatec-100 text-fatec-800 dark:bg-fatec-900/50 dark:text-fatec-200">
-              Português
-            </span>
-            <span id="train-q-topic" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-              Sintaxe
-            </span>
-            <span id="train-q-exam" class="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Fatec · Prova Anterior
-            </span>
+            <button type="button" id="btnQuickReviewWrong" class="px-3 py-1.5 rounded-lg bg-red-500/15 text-red-400 font-bold hover:bg-red-500/25 transition-colors">
+              🔁 Revisar Meus Erros (<span id="wrongCountBadge">0</span>)
+            </button>
+            <button type="button" id="btnClearFilters" class="px-3 py-1.5 rounded-lg kk-card-subtle font-semibold hover:border-blue-500">
+              Limpar Filtros
+            </button>
           </div>
-          <span id="train-q-status-badge" class="text-xs font-semibold text-slate-400"></span>
-        </div>
-
-        <p id="train-q-text" class="text-base sm:text-lg font-medium text-slate-900 dark:text-slate-100 leading-relaxed whitespace-pre-line">
-          <!-- Enunciado -->
-        </p>
-
-        <div id="train-q-options" class="space-y-3">
-          <!-- Alternativas -->
-        </div>
-
-        <div id="train-q-explanation" class="hidden rounded-2xl p-4 text-sm leading-relaxed border">
-          <!-- Comentário / Gabarito -->
-        </div>
-
-        <!-- Botões de Navegação do Treino -->
-        <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-          <button id="train-prev-btn" onclick="prevTrainQuestion()" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40 transition">
-            ← Anterior
-          </button>
-
           <div class="flex items-center gap-2">
-            <button id="train-finish-batch-btn" onclick="finishBatchCorrection()" class="hidden px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition">
-              Corrigir todas agora
-            </button>
-            <button id="train-next-btn" onclick="nextTrainQuestion()" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-fatec-600 hover:bg-fatec-700 text-white transition">
-              Próxima →
-            </button>
+            <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
+              <input type="checkbox" id="chkAutoAdvance" class="accent-blue-600 w-4 h-4" />
+              <span>Avançar automaticamente ao acertar</span>
+            </label>
           </div>
         </div>
       </div>
 
-      <!-- Resumo da Correção ao Final -->
-      <div id="train-batch-summary" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4">
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Resultado da Bateria de Treino</h3>
-        <p id="train-batch-summary-text" class="text-sm text-slate-600 dark:text-slate-300"></p>
-        <div id="train-batch-review-list" class="space-y-3 pt-2"></div>
-      </div>
-
-      <!-- Estado vazio (ex: Modo Revisão sem erros) -->
-      <div id="train-empty-state" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center space-y-4">
-        <div class="text-4xl">🎉</div>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Nenhuma questão pendente neste filtro!</h3>
-        <p class="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-          Se você ativou o Modo Revisão, isso significa que você ainda não errou nenhuma questão ou já corrigiu todas!
-        </p>
-        <button onclick="disableErrorReviewMode()" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-fatec-600 text-white hover:bg-fatec-700 transition">
-          Ver todas as questões
-        </button>
-      </div>
+      <!-- Área Principal da Questão -->
+      <div id="trainQuestionStage" class="kk-card p-5 sm:p-7"></div>
     </section>
 
-    <!-- ==================== ABA 3: SIMULADO ==================== -->
-    <section id="tab-simulado" class="tab-section hidden space-y-6 animate-fade-in">
-      <!-- Tela Inicial de Configuração do Simulado -->
-      <div id="simulado-setup" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm space-y-6">
-        <div class="max-w-2xl space-y-2">
-          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-200">
-            Modo Prova Oficial
-          </span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Simulado Cronometrado Fatec</h2>
-          <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400">
-            Experimente as condições reais do vestibular com cronômetro regressivo, cartão de navegação rápida e relatório completo ao final.
-          </p>
+    <!-- ==================== 3. VIEW: SIMULADO CRONOMETRADO ==================== -->
+    <section id="view-simulado" class="view-section space-y-6">
+      <!-- Tela 1: Configuração do Simulado -->
+      <div id="simConfigPanel" class="kk-card p-6 sm:p-8 max-w-4xl mx-auto space-y-6">
+        <div class="flex items-start justify-between gap-4 border-b border-blue-500/15 pb-5">
+          <div>
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 mb-1">Modo Prova Real</span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold">Simulado Cronometrado Vestibulares</h1>
+            <p class="text-xs sm:text-sm opacity-75 mt-1">Treine gestão de tempo e resistência mental. O resultado detalhado com gabarito comentado é liberado ao finalizar.</p>
+          </div>
+          <div class="text-3xl hidden sm:block">⏱️</div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label class="cursor-pointer border-2 border-fatec-500 bg-fatec-50/40 dark:bg-fatec-900/20 rounded-2xl p-5 flex items-start gap-3">
-            <input type="radio" name="simulado-type" value="oficial" checked class="mt-1 accent-fatec-600" />
-            <div>
-              <div class="font-bold text-slate-900 dark:text-white">Simulado Oficial Completo (60 questões · 5h00)</div>
-              <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Formato idêntico à prova da Fatec: 60 itens montados a partir do banco de questões com duração de 5 horas.
-              </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <label class="kk-card-subtle p-4 cursor-pointer border-2 border-blue-500 bg-blue-500/10 transition-all sim-mode-card" data-mode="express">
+            <input type="radio" name="simMode" value="express" checked class="hidden" />
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-extrabold text-base">⚡ Simulado Express</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded bg-amber-500 text-slate-950">Recomendado</span>
             </div>
+            <div class="text-2xl font-black text-blue-400 my-1">10 Questões</div>
+            <p class="text-xs opacity-75">Tempo limite: <strong>25 minutos</strong> (~2,5 min por questão).</p>
           </label>
 
-          <label class="cursor-pointer border border-slate-200 dark:border-slate-700 hover:border-fatec-400 rounded-2xl p-5 flex items-start gap-3">
-            <input type="radio" name="simulado-type" value="rapido" class="mt-1 accent-fatec-600" />
-            <div>
-              <div class="font-bold text-slate-900 dark:text-white">Simulado Express Humanas (15 questões · 45 min)</div>
-              <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Ideal para treinar gestão de tempo em blocos menores no dia a dia.
-              </div>
+          <label class="kk-card-subtle p-4 cursor-pointer border-2 border-transparent hover:border-blue-500/50 transition-all sim-mode-card" data-mode="medio">
+            <input type="radio" name="simMode" value="medio" class="hidden" />
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-extrabold text-base">🎯 Meio Simulado</span>
             </div>
+            <div class="text-2xl font-black text-blue-400 my-1">18 Questões</div>
+            <p class="text-xs opacity-75">Tempo limite: <strong>45 minutos</strong>. Cobertura multidisciplinar.</p>
+          </label>
+
+          <label class="kk-card-subtle p-4 cursor-pointer border-2 border-transparent hover:border-blue-500/50 transition-all sim-mode-card" data-mode="completo">
+            <input type="radio" name="simMode" value="completo" class="hidden" />
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-extrabold text-base">🏆 Maratona Completa</span>
+            </div>
+            <div class="text-2xl font-black text-blue-400 my-1" id="simAllCountLabel">24 Questões</div>
+            <p class="text-xs opacity-75">Tempo limite: <strong>60 minutos</strong>. Todo o banco disponível.</p>
           </label>
         </div>
 
-        <div class="pt-2">
-          <button onclick="startSimulado()" class="px-7 py-3.5 rounded-xl font-bold text-sm bg-fatec-600 hover:bg-fatec-700 text-white shadow-lg shadow-fatec-600/25 transition">
-            Iniciar Simulado Agora
-          </button>
-        </div>
-      </div>
-
-      <!-- Interface Ativa do Simulado -->
-      <div id="simulado-active" class="hidden space-y-6">
-        <!-- Barra Superior do Simulado -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-sm">
-          <div class="flex items-center gap-3">
-            <div class="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-mono text-lg sm:text-xl font-bold tracking-wider" id="simulado-timer">
-              05:00:00
-            </div>
-            <button id="simulado-pause-btn" onclick="toggleSimuladoPause()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 hover:bg-amber-200 transition">
-              Pausar
-            </button>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <span class="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300">
-              Respondidas: <span id="simulado-answered-count" class="text-fatec-600 dark:text-fatec-400 font-bold">0</span>/<span id="simulado-total-count">60</span>
-            </span>
-            <button onclick="confirmFinishSimulado()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition">
-              Entregar Prova
-            </button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Questão do Simulado -->
-          <div class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
-            <div class="flex items-center justify-between gap-2">
-              <span id="sim-q-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-fatec-100 text-fatec-800 dark:bg-fatec-900/50 dark:text-fatec-200">
-                Questão 1 · Português
-              </span>
-              <button onclick="toggleSimuladoFlag()" id="sim-flag-btn" class="text-xs font-semibold px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                🚩 Marcar para revisar
-              </button>
-            </div>
-
-            <p id="sim-q-text" class="text-base sm:text-lg font-medium text-slate-900 dark:text-slate-100 leading-relaxed whitespace-pre-line"></p>
-
-            <div id="sim-q-options" class="space-y-3"></div>
-
-            <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
-              <button id="sim-prev-btn" onclick="navigateSimuladoQuestion(simuladoState.currentIndex - 1)" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40 transition">
-                ← Anterior
-              </button>
-              <button id="sim-next-btn" onclick="navigateSimuladoQuestion(simuladoState.currentIndex + 1)" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-fatec-600 hover:bg-fatec-700 text-white transition">
-                Próxima →
-              </button>
-            </div>
-          </div>
-
-          <!-- Cartão-Resposta / Grade de Navegação -->
-          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 space-y-4 h-fit">
-            <h3 class="font-bold text-sm text-slate-900 dark:text-white">Cartão de Questões</h3>
-            <div class="flex flex-wrap gap-3 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-fatec-600 inline-block"></span> Respondida</span>
-              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span> Marcada</span>
-              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-slate-200 dark:bg-slate-700 inline-block"></span> Em branco</span>
-            </div>
-            <div id="simulado-grid" class="grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-5 gap-2 max-h-96 overflow-y-auto pr-1">
-              <!-- Botões 1..N -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Resultado Final do Simulado -->
-      <div id="simulado-result" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Simulado Concluído</span>
-            <h2 id="sim-res-title" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-              Você acertou 0 de 60 questões (0%)
-            </h2>
-            <p id="sim-res-time" class="text-sm text-slate-600 dark:text-slate-400 mt-1">Tempo utilizado: 00:00:00</p>
-          </div>
-          <button onclick="resetSimuladoUI()" class="px-5 py-3 rounded-xl text-sm font-bold bg-fatec-600 hover:bg-fatec-700 text-white transition">
-            Novo Simulado
-          </button>
-        </div>
-
-        <div class="space-y-3">
-          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Gabarito Comentado</h3>
-          <div id="sim-res-list" class="space-y-3 max-h-[540px] overflow-y-auto pr-1"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== ABA 4: ROTEIRO ==================== -->
-    <section id="tab-roteiro" class="tab-section hidden space-y-6 animate-fade-in">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Roteiro de Estudos · Fatec</h2>
-            <p class="text-sm text-slate-600 dark:text-slate-400">Marque os tópicos concluídos. Seu progresso fica salvo automaticamente.</p>
-          </div>
-          <div class="text-right">
-            <span id="roadmap-percent" class="text-2xl font-extrabold text-fatec-600 dark:text-fatec-400">0%</span>
-            <div class="text-xs text-slate-500 dark:text-slate-400" id="roadmap-count-text">0 de 16 tópicos</div>
-          </div>
-        </div>
-        <div class="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-          <div id="roadmap-progress-bar" class="h-full bg-gradient-to-r from-fatec-500 to-indigo-600 transition-all duration-300" style="width: 0%"></div>
-        </div>
-      </div>
-
-      <div id="roadmap-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Renderizado via JS -->
-      </div>
-    </section>
-
-    <!-- ==================== ABA 5: DESEMPENHO ==================== -->
-    <section id="tab-desempenho" class="tab-section hidden space-y-6 animate-fade-in">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div class="flex flex-wrap items-center gap-2.5">
-            <h2 id="desempenho-title" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Seu Desempenho</h2>
-            <span id="desempenho-profile-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-fatec-100 text-fatec-800 dark:bg-fatec-900/50 dark:text-fatec-200">
-              Perfil Visitante
-            </span>
-          </div>
-          <p id="desempenho-subtitle" class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Estatísticas consolidadas dos treinos, mini quiz e simulados.
-          </p>
+          <label class="block text-xs font-bold uppercase tracking-wider opacity-75 mb-2">Filtrar área específica (opcional)</label>
+          <select id="simSubjectFilter" class="kk-input max-w-md">
+            <option value="ALL">Todas as Matérias (Prova Geral)</option>
+          </select>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button id="desempenho-login-cta" onclick="openAuthModal('register')" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-fatec-600 hover:bg-fatec-700 text-white transition">
-            Criar conta para salvar perfil
-          </button>
-          <button onclick="confirmResetStats()" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition">
-            Zerar estatísticas
+
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-blue-500/15">
+          <div class="text-xs opacity-75">
+            💡 <strong>Dica de Prova:</strong> Na prova oficial, disciplinas com <strong>Peso 2</strong> variam conforme o curso escolhido.
+          </div>
+          <button type="button" id="btnStartSimulado" class="kk-btn-amber px-7 py-3 text-sm sm:text-base">
+            Iniciar Simulado Agora →
           </button>
         </div>
       </div>
 
-      <!-- KPIs Principais -->
+      <!-- Tela 2: Execução da Prova -->
+      <div id="simActivePanel" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-8 kk-card p-5 sm:p-7 space-y-5" id="simQuestionBox"></div>
+
+        <aside class="lg:col-span-4 space-y-4">
+          <div class="kk-card p-5 sticky top-20 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-blue-500/15">
+              <div>
+                <div class="text-[11px] font-bold uppercase opacity-70">Tempo Restante</div>
+                <div id="simTimerDisplay" class="text-3xl font-black font-mono text-amber-400">25:00</div>
+              </div>
+              <div class="text-right">
+                <div class="text-[11px] font-bold uppercase opacity-70">Respondidas</div>
+                <div id="simProgressText" class="text-lg font-extrabold text-blue-400">0 / 10</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-xs font-bold opacity-75 mb-2">Cartão de Respostas</div>
+              <div id="simGridNav" class="grid grid-cols-5 gap-2"></div>
+              <div class="flex flex-wrap gap-3 text-[11px] opacity-75 mt-3">
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-blue-600 inline-block"></span> Respondida</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span> Revisar</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm border border-blue-400 inline-block"></span> Atual</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-blue-500/15 flex flex-col gap-2">
+              <button type="button" id="btnFinishSimulado" class="kk-btn-amber w-full py-2.5 text-sm">
+                Finalizar e Corrigir Prova
+              </button>
+              <button type="button" id="btnAbortSimulado" class="kk-btn-outline w-full py-2 text-xs text-red-400">
+                Cancelar Simulado
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Tela 3: Resultado Detalhado -->
+      <div id="simResultPanel" class="hidden space-y-6"></div>
+    </section>
+
+    <!-- ==================== 4. VIEW: ROTEIRO DE ESTUDOS 8 SEMANAS ==================== -->
+    <section id="view-roteiro" class="view-section space-y-6">
+      <div class="kk-card p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2 max-w-2xl">
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400">Planejamento Estratégico</span>
+          <h1 class="text-2xl sm:text-3xl font-extrabold">Roteiro Intensivo Vestibulares · 8 Semanas</h1>
+          <p class="text-xs sm:text-sm opacity-75">Cronograma focado nos tópicos que mais caem nos exames vestibulares, incluindo treino de Redação Dissertativa.</p>
+        </div>
+        <div class="kk-card-subtle p-4 min-w-[230px] space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold">
+            <span>Progresso do Plano</span>
+            <span id="roadmapPercentText" class="text-amber-400">0%</span>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-800 overflow-hidden">
+            <div id="roadmapProgressBar" class="h-full bg-gradient-to-r from-blue-600 to-amber-500 transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="text-[11px] opacity-70" id="roadmapCountText">0 de 16 metas concluídas</div>
+        </div>
+      </div>
+
+      <!-- Dica de Pesos por Curso -->
+      <div class="kk-card p-4 sm:p-5 border-l-4 border-l-blue-500 flex flex-wrap items-center justify-between gap-4">
+        <div class="text-xs sm:text-sm">
+          <strong>⚖️ Atenção aos Pesos Universitários:</strong> Cursos de <strong>TI (ADS, Ciência de Dados, Seg. Info)</strong> têm Peso 2 em <em>Matemática e Raciocínio Lógico</em>. Cursos de <strong>Gestão</strong> têm Peso 2 em <em>Matemática e Português</em>.
+        </div>
+        <button type="button" data-nav="treinar" class="kk-btn-primary px-4 py-2 text-xs">Praticar Questões Agora</button>
+      </div>
+
+      <!-- Grid das 8 Semanas -->
+      <div id="roadmapContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+    </section>
+
+    <!-- ==================== 5. VIEW: DESEMPENHO & ANALYTICS ==================== -->
+    <section id="view-desempenho" class="view-section space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold">Painel de Desempenho & Analytics</h1>
+          <p class="text-xs sm:text-sm opacity-75 mt-0.5">Acompanhe sua evolução real, identifique gargalos e exporte seu relatório de estudos.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btnExportStats" class="kk-btn-outline px-3.5 py-2 text-xs">📥 Exportar Relatório (.txt)</button>
+          <button type="button" id="btnResetStats" class="px-3.5 py-2 rounded-xl bg-red-500/15 text-red-400 font-semibold text-xs hover:bg-red-500/25 transition-colors">🗑️ Zerar Histórico</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-          <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Questões Respondidas</div>
-          <div id="stat-total-answered" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">0</div>
+        <div class="kk-card p-5">
+          <div class="text-xs font-bold uppercase opacity-70">Questões Resolvidas</div>
+          <div id="kpiSolved" class="text-3xl font-black text-blue-400 mt-1">0</div>
+          <div class="text-xs opacity-70 mt-1" id="kpiCorrectSub">0 acertos registrados</div>
         </div>
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-          <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Total de Acertos</div>
-          <div id="stat-total-hits" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">0</div>
+        <div class="kk-card p-5">
+          <div class="text-xs font-bold uppercase opacity-70">Taxa de Acerto</div>
+          <div id="kpiAccuracy" class="text-3xl font-black text-emerald-400 mt-1">0%</div>
+          <div class="text-xs opacity-70 mt-1">Meta recomendada: ≥ 70%</div>
         </div>
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-          <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Aproveitamento Geral</div>
-          <div id="stat-accuracy" class="text-2xl sm:text-3xl font-extrabold text-fatec-600 dark:text-fatec-400 mt-1">0%</div>
+        <div class="kk-card p-5">
+          <div class="text-xs font-bold uppercase opacity-70">Melhor Matéria</div>
+          <div id="kpiBestSubject" class="text-xl font-extrabold text-amber-400 mt-2 truncate">—</div>
+          <div class="text-xs opacity-70 mt-1" id="kpiBestSubjectRate">Resolva questões para calcular</div>
         </div>
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-          <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Erradas para Revisar</div>
-          <div id="stat-wrong-pool" class="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">0</div>
+        <div class="kk-card p-5">
+          <div class="text-xs font-bold uppercase opacity-70">Ofensiva & Simulados</div>
+          <div id="kpiLevel" class="text-2xl font-black text-purple-400 mt-1">1 dia seguido</div>
+          <div class="text-xs opacity-70 mt-1" id="kpiSimCountDetail">0 simulados concluídos</div>
+        </div>
+      </div>
+
+      <!-- Gráfico por Matéria + Conquistas -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 kk-card p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-extrabold">Aproveitamento por Matéria</h2>
+            <span class="text-xs opacity-70">% de acertos</span>
+          </div>
+          <div id="subjectChartBars" class="space-y-3.5 pt-2"></div>
+        </div>
+
+        <div class="lg:col-span-5 kk-card p-6 space-y-4">
+          <h2 class="text-lg font-extrabold">Medalhas & Conquistas</h2>
+          <div id="badgesGrid" class="grid grid-cols-2 gap-3"></div>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Aproveitamento por Matéria -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4">
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Desempenho por Matéria</h3>
-          <div id="stat-by-subject" class="space-y-4">
-            <!-- Barras por matéria -->
-          </div>
-        </div>
-
-        <!-- Histórico Recente -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4">
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Últimas Atividades</h3>
-          <div id="stat-history-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-            <!-- Histórico -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== ABA 6: SOBRE ==================== -->
-    <section id="tab-sobre" class="tab-section hidden space-y-6 animate-fade-in">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm max-w-4xl mx-auto space-y-6">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-fatec-100 text-fatec-800 dark:bg-fatec-900/50 dark:text-fatec-200">
-          Sobre o Projeto
-        </div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-          Klick Kwiz · Preparação focada no Vestibular Fatec
-        </h2>
-        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-          O <strong>Klick Kwiz</strong> nasceu com um objetivo direto: ajudar estudantes que vão prestar o vestibular das Faculdades de Tecnologia do Estado de São Paulo (Fatec) a praticarem com questões objetivas, contextualizadas e fiéis ao estilo da banca.
-        </p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
-            <div class="font-bold text-slate-900 dark:text-white mb-1">100% Local & Rápido</div>
-            <p class="text-xs text-slate-600 dark:text-slate-400">Não exige cadastro nem servidor externo. Todo o seu histórico fica salvo no navegador.</p>
-          </div>
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
-            <div class="font-bold text-slate-900 dark:text-white mb-1">Revisão Ativa</div>
-            <p class="text-xs text-slate-600 dark:text-slate-400">O sistema identifica automaticamente onde você errou e cria listas personalizadas de revisão.</p>
-          </div>
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
-            <div class="font-bold text-slate-900 dark:text-white mb-1">Banco Expansível</div>
-            <p class="text-xs text-slate-600 dark:text-slate-400">Pela aba Admin você pode cadastrar novas questões e personalizar seus próprios treinos.</p>
-          </div>
+      <!-- Histórico de Simulados -->
+      <div class="kk-card p-6 space-y-4">
+        <h2 class="text-lg font-extrabold">Histórico de Simulados Realizados</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="border-b border-blue-500/20 text-xs uppercase opacity-70">
+                <th class="py-2.5 pr-4">Data</th>
+                <th class="py-2.5 pr-4">Modalidade</th>
+                <th class="py-2.5 pr-4">Acertos</th>
+                <th class="py-2.5 pr-4">Aproveitamento</th>
+                <th class="py-2.5">Tempo</th>
+              </tr>
+            </thead>
+            <tbody id="simHistoryBody"></tbody>
+          </table>
         </div>
       </div>
     </section>
 
-    <!-- ==================== ABA 7: CONTATO ==================== -->
-    <section id="tab-contato" class="tab-section hidden space-y-6 animate-fade-in">
-      <div class="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm space-y-6">
-        <div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Fale Conosco</h2>
-          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Encontrou algum detalhe em um gabarito ou quer sugerir novas provas da Fatec? Envie uma mensagem ou escreva para
-            <a href="mailto:klickkwiz@gmail.com" class="text-fatec-600 dark:text-fatec-400 font-semibold underline">klickkwiz@gmail.com</a>.
-          </p>
+    <!-- ==================== 6. VIEW: PERFIL DO ESTUDANTE ==================== -->
+    <section id="view-perfil" class="view-section max-w-3xl mx-auto space-y-6">
+      <div class="kk-card p-6 sm:p-8 space-y-6">
+        <div class="flex flex-wrap items-center gap-4 pb-6 border-b border-blue-500/15">
+          <div id="profileBigAvatar" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-amber-500 text-white font-black text-2xl grid place-items-center shadow-lg">KV</div>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Perfil do Candidato Vestibulares</span>
+            <h1 id="profileHeadingName" class="text-2xl font-extrabold">Estudante Visitante</h1>
+            <p id="profileHeadingEmail" class="text-xs opacity-75">Modo local · Dados salvos no navegador</p>
+          </div>
         </div>
 
-        <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Seu nome</label>
-            <input type="text" id="contact-name" required placeholder="Ex.: Ana Paula" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Seu e-mail</label>
-            <input type="email" id="contact-email" required placeholder="voce@exemplo.com" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Assunto</label>
-            <select id="contact-subject" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500">
-              <option>Sugestão de questões / provas</option>
-              <option>Revisão de gabarito</option>
-              <option>Feedback sobre a plataforma</option>
-              <option>Outro assunto</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Mensagem</label>
-            <textarea id="contact-message" rows="4" required placeholder="Escreva sua dúvida ou sugestão..." class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500"></textarea>
-          </div>
-          <button type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm bg-fatec-600 hover:bg-fatec-700 text-white transition">
-            Enviar mensagem
-          </button>
-        </form>
-
-        <div id="contact-success" class="hidden rounded-2xl p-4 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-sm">
-          Mensagem registrada com sucesso! Obrigado por contribuir com o Klick Kwiz.
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== ABA 8: ADMIN ==================== -->
-    <section id="tab-admin" class="tab-section hidden space-y-6 animate-fade-in">
-      <!-- Tela de Bloqueio Opcional do Admin -->
-      <div id="admin-lock-screen" class="max-w-md mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm text-center space-y-5">
-        <div class="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-2xl flex items-center justify-center mx-auto">
-          🔐
-        </div>
-        <div>
-          <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">Acesso de Administrador / Professor</h2>
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Área restrita para edição do banco de questões da Fatec. Digite a senha administrativa ou use o acesso rápido para testar.
-          </p>
-        </div>
-        <form onsubmit="handleAdminUnlock(event)" class="space-y-3 text-left">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Senha de Administrador</label>
-            <input type="password" id="admin-pass-input" placeholder="Digite admin123" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500" />
-          </div>
-          <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-sm bg-fatec-600 hover:bg-fatec-700 text-white transition">
-            Desbloquear Painel Admin
-          </button>
-        </form>
-        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-          <button type="button" onclick="quickUnlockAdmin()" class="text-xs font-bold text-fatec-600 dark:text-fatec-400 hover:underline">
-            ⚡ Acesso rápido como Professor / Admin (Testar agora)
-          </button>
-        </div>
-      </div>
-
-      <!-- Conteúdo Desbloqueado do Admin -->
-      <div id="admin-unlocked-content" class="hidden space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Admin · Banco de Questões</h2>
-              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
-                Modo Professor Ativo
-              </span>
+        <form id="profileForm" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold mb-1">Nome Completo</label>
+              <input type="text" id="profName" class="kk-input" required />
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400">Cadastre novas questões, gerencie o banco local ou restaure as 30 questões originais.</p>
+            <div>
+              <label class="block text-xs font-bold mb-1">Curso Alvo</label>
+              <select id="profCourse" class="kk-input">
+                <option value="Análise e Desenvolvimento de Sistemas (ADS)">Análise e Desenvolvimento de Sistemas (ADS)</option>
+                <option value="Ciência de Dados">Ciência de Dados</option>
+                <option value="Desenvolvimento de Software Multiplataforma (DSM)">Desenvolvimento de Software Multiplataforma (DSM)</option>
+                <option value="Segurança da Informação">Segurança da Informação</option>
+                <option value="Gestão Empresarial">Gestão Empresarial</option>
+                <option value="Logística">Logística</option>
+                <option value="Automação Industrial">Automação Industrial</option>
+                <option value="Comércio Exterior">Comércio Exterior</option>
+              </select>
+            </div>
           </div>
-          <div class="flex flex-wrap gap-2">
-            <button onclick="exportBankJSON()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-              Copiar JSON do Banco
-            </button>
-            <button onclick="confirmRestoreDefaultBank()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 hover:bg-amber-200 transition">
-              Restaurar 30 originais
-            </button>
-            <button onclick="lockAdminPanel()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
-              Bloquear Admin
-            </button>
-          </div>
-        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <select id="admin-correct" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm font-bold">
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-              <option value="E">E</option>
-            </select>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold mb-1">Instituição / Campus Desejado</label>
+              <input type="text" id="profCampus" class="kk-input" placeholder="Ex: USP, Unicamp, Unesp, Vestibulares..." />
+            </div>
+            <div>
+              <label class="block text-xs font-bold mb-1">Meta Diária de Questões</label>
+              <input type="number" id="profDailyGoal" min="3" max="100" class="kk-input" value="10" />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-blue-500/15">
+            <button type="submit" class="kk-btn-primary px-6 py-2.5 text-sm">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ==================== 7. VIEW: ADMIN (GERENCIADOR DE QUESTÕES) ==================== -->
+    <section id="view-admin" class="view-section space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold">Admin · Gerenciador do Banco de Questões</h1>
+          <p class="text-xs sm:text-sm opacity-75 mt-0.5">Adicione novas questões personalizadas ao Klick Kwiz. Elas ficam imediatamente disponíveis nos treinos e simulados.</p>
+        </div>
+        <span class="px-3 py-1.5 rounded-xl kk-card-subtle text-xs font-bold text-amber-400">Total no Banco: <span id="adminTotalCount">24</span> questões</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Formulário Nova Questão -->
+        <form id="adminNewQuestionForm" class="lg:col-span-6 kk-card p-6 space-y-4">
+          <h2 class="text-lg font-extrabold border-b border-blue-500/15 pb-3">➕ Cadastrar Nova Questão</h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-bold mb-1">Matéria</label>
+              <select id="admSubject" class="kk-input" required>
+                <option value="Matemática e Raciocínio Lógico">Matemática e Raciocínio Lógico</option>
+                <option value="Português e Literatura">Português e Literatura</option>
+                <option value="História">História</option>
+                <option value="Geografia">Geografia</option>
+                <option value="Inglês">Inglês</option>
+                <option value="Física">Física</option>
+                <option value="Química">Química</option>
+                <option value="Biologia">Biologia</option>
+                <option value="Multidisciplinar">Multidisciplinar</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold mb-1">Edição / Ano</label>
+              <input type="text" id="admExam" class="kk-input" value="Vestibular 2026/2" required />
+            </div>
+            <div>
+              <label class="block text-xs font-bold mb-1">Dificuldade</label>
+              <select id="admDifficulty" class="kk-input">
+                <option value="Fácil">Fácil</option>
+                <option value="Média" selected>Média</option>
+                <option value="Difícil">Difícil</option>
+              </select>
+            </div>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold mb-1">Comentário / Explicação</label>
-            <textarea id="admin-explanation" rows="2" required placeholder="Explique por que a alternativa é a correta..." class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"></textarea>
+            <label class="block text-xs font-bold mb-1">Texto-base (opcional)</label>
+            <textarea id="admContext" rows="2" class="kk-input" placeholder="Trecho de reportagem, poema, código ou contexto da questão..."></textarea>
           </div>
 
-          <button type="submit" class="w-full py-3 rounded-xl font-bold text-sm bg-fatec-600 hover:bg-fatec-700 text-white transition">
-            + Adicionar ao Banco
-          </button>
+          <div>
+            <label class="block text-xs font-bold mb-1">Enunciado da Questão *</label>
+            <textarea id="admPrompt" rows="2" class="kk-input" required placeholder="Digite a pergunta principal..."></textarea>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-bold">Alternativas (A até E) *</label>
+            <input type="text" id="admOpt0" class="kk-input" placeholder="Alternativa A" required />
+            <input type="text" id="admOpt1" class="kk-input" placeholder="Alternativa B" required />
+            <input type="text" id="admOpt2" class="kk-input" placeholder="Alternativa C" required />
+            <input type="text" id="admOpt3" class="kk-input" placeholder="Alternativa D" required />
+            <input type="text" id="admOpt4" class="kk-input" placeholder="Alternativa E" required />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-bold mb-1">Gabarito Correto</label>
+              <select id="admAnswer" class="kk-input">
+                <option value="0">Alternativa A</option>
+                <option value="1">Alternativa B</option>
+                <option value="2">Alternativa C</option>
+                <option value="3">Alternativa D</option>
+                <option value="4">Alternativa E</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold mb-1">Resolução Comentada *</label>
+              <input type="text" id="admExplanation" class="kk-input" required placeholder="Explique por que esta alternativa é a correta..." />
+            </div>
+          </div>
+
+          <button type="submit" class="kk-btn-amber w-full py-2.5 text-sm">Salvar Questão no Banco</button>
         </form>
 
         <!-- Lista de Questões Cadastradas -->
-        <div class="lg:col-span-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="font-bold text-lg text-slate-900 dark:text-white">
-              Questões no Banco (<span id="admin-total-count">30</span>)
-            </h3>
-            <input type="text" id="admin-search" oninput="renderAdminList()" placeholder="Buscar questão..." class="rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-fatec-500" />
+        <div class="lg:col-span-6 kk-card p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-blue-500/15 pb-3">
+            <h2 class="text-lg font-extrabold">📚 Questões no Acervo</h2>
+            <span class="text-xs opacity-70">Questões customizadas podem ser removidas</span>
           </div>
-          <div id="admin-questions-list" class="space-y-3 max-h-[640px] overflow-y-auto pr-1">
-            <!-- Lista via JS -->
+          <div id="adminQuestionsList" class="space-y-2.5 max-h-[620px] overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 8. VIEW: SOBRE & CONTATO ==================== -->
+    <section id="view-sobre" class="view-section max-w-4xl mx-auto space-y-6">
+      <div class="kk-card p-6 sm:p-8 space-y-4">
+        <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400">Sobre a Plataforma</span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold">Klick Kwiz · Preparatório Inteligente Vestibulares</h1>
+        <p class="text-sm opacity-85 leading-relaxed">
+          O <strong>Klick Kwiz</strong> nasceu com a missão de democratizar o acesso às principais universidades e faculdades públicas do país. Através da prática ativa com questões comentadas, simulados cronometrados e análise inteligente de desempenho, transformamos o estudo diário em evolução mensurável.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3">
+          <div class="kk-card-subtle p-4">
+            <div class="font-extrabold text-amber-400 text-sm mb-1">ESTUDE</div>
+            <p class="text-xs opacity-75">Roteiro estruturado de 8 semanas cobrindo todos os eixos exigidos nos principais exames vestibulares.</p>
+          </div>
+          <div class="kk-card-subtle p-4">
+            <div class="font-extrabold text-blue-400 text-sm mb-1">PRATIQUE</div>
+            <p class="text-xs opacity-75">Questões comentadas com ferramentas reais de prova como eliminação de alternativas e simulados.</p>
+          </div>
+          <div class="kk-card-subtle p-4">
+            <div class="font-extrabold text-emerald-400 text-sm mb-1">EVOLUA</div>
+            <p class="text-xs opacity-75">Revisão automática dos seus erros e métricas por disciplina para maximizar sua nota final.</p>
           </div>
         </div>
       </div>
+
+      <!-- Formulário de Contato -->
+      <div class="kk-card p-6 sm:p-8 space-y-4">
+        <h2 class="text-xl font-extrabold">Fale com a Equipe Klick Kwiz</h2>
+        <p class="text-xs sm:text-sm opacity-75">Sugestões de provas, correções de gabarito ou dúvidas sobre os vestibulares? Envie sua mensagem.</p>
+        <form id="contactForm" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold mb-1">Seu Nome</label>
+              <input type="text" id="contactName" class="kk-input" required placeholder="Ex: Mariana Silva" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold mb-1">E-mail</label>
+              <input type="email" id="contactEmail" class="kk-input" required placeholder="mariana@email.com" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1">Mensagem</label>
+            <textarea id="contactMsg" rows="3" class="kk-input" required placeholder="Escreva sua dúvida ou sugestão..."></textarea>
+          </div>
+          <button type="submit" class="kk-btn-primary px-6 py-2.5 text-sm">Enviar Mensagem</button>
+        </form>
       </div>
     </section>
 
   </main>
 
-  <!-- Rodapé -->
-  <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 py-6 mt-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-      © 2026 Klick Kwiz · <a href="mailto:klickkwiz@gmail.com" class="hover:text-fatec-600 dark:hover:text-fatec-400 underline">klickkwiz@gmail.com</a> · Dados salvos localmente no seu navegador.
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="border-t border-blue-500/15 mt-12 py-8 text-center text-xs opacity-75">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 font-brand font-extrabold text-sm">
+        <span>klick <span class="text-blue-500">kwiz</span></span>
+        <span>·</span>
+        <span class="font-normal">ESTUDE • PRATIQUE • EVOLUA</span>
+      </div>
+      <div>Plataforma gratuita de preparação para Vestibulares · Aprender nunca foi tão fácil.</div>
     </div>
   </footer>
 
-  <!-- ==================== JAVASCRIPT COMPLETO ==================== -->
+  <!-- ==================== MODAL DE AUTENTICAÇÃO (LOGIN / CADASTRO) ==================== -->
+  <div id="authModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/75 backdrop-blur-sm p-4">
+    <div class="kk-card w-full max-w-md p-6 sm:p-7 space-y-5 relative animate-[fadeSlideUp_0.2s_ease]">
+      <button type="button" id="btnCloseAuth" class="absolute top-4 right-4 w-8 h-8 rounded-lg kk-card-subtle grid place-items-center text-sm hover:text-red-400" aria-label="Fechar modal">✕</button>
+
+      <div class="text-center space-y-1">
+        <div class="font-brand font-extrabold text-2xl">klick <span class="text-blue-500">kwiz</span></div>
+        <p class="text-xs opacity-75">Salve seu progresso, histórico de erros e simulados</p>
+      </div>
+
+      <!-- Tabs Login / Cadastro -->
+      <div class="grid grid-cols-2 gap-1 p-1 rounded-xl kk-card-subtle">
+        <button type="button" id="tabLogin" class="py-2 rounded-lg text-xs font-bold bg-blue-600 text-white transition-all">Entrar</button>
+        <button type="button" id="tabRegister" class="py-2 rounded-lg text-xs font-bold opacity-75 hover:opacity-100 transition-all">Criar Conta</button>
+      </div>
+
+      <!-- Form Login -->
+      <form id="loginForm" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold mb-1">E-mail</label>
+          <input type="email" id="loginEmail" class="kk-input" required placeholder="seu@email.com" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold mb-1">Senha</label>
+          <input type="password" id="loginPassword" class="kk-input" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="kk-btn-primary w-full py-2.5 text-sm">Acessar Plataforma</button>
+
+        <div class="p-3 rounded-xl border border-dashed border-amber-500/40 bg-amber-500/5 text-xs flex items-center justify-between gap-2">
+          <div>
+            <div class="font-bold text-amber-400">Acesso Rápido Demo</div>
+            <div class="opacity-75">Testar com conta pré-configurada</div>
+          </div>
+          <button type="button" id="btnFillDemo" class="kk-btn-amber px-3 py-1.5 text-xs">Entrar Demo</button>
+        </div>
+      </form>
+
+      <!-- Form Cadastro -->
+      <form id="registerForm" class="hidden space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold mb-1">Nome Completo</label>
+          <input type="text" id="regName" class="kk-input" required placeholder="Ex: Lucas Almeida" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold mb-1">E-mail</label>
+          <input type="email" id="regEmail" class="kk-input" required placeholder="lucas@email.com" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold mb-1">Curso Pretendido</label>
+          <select id="regCourse" class="kk-input">
+            <option value="Análise e Desenvolvimento de Sistemas (ADS)">Análise e Desenvolvimento de Sistemas (ADS)</option>
+            <option value="Ciência de Dados">Ciência de Dados</option>
+            <option value="Desenvolvimento de Software Multiplataforma (DSM)">Desenvolvimento de Software Multiplataforma (DSM)</option>
+            <option value="Gestão Empresarial">Gestão Empresarial</option>
+            <option value="Segurança da Informação">Segurança da Informação</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold mb-1">Senha</label>
+          <input type="password" id="regPassword" class="kk-input" required minlength="4" placeholder="Mínimo 4 caracteres" />
+        </div>
+        <button type="submit" class="kk-btn-amber w-full py-2.5 text-sm">Criar Conta Grátis</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-[calc(100vw-2rem)] pointer-events-none"></div>
+
+  <!-- ==================== JAVASCRIPT COMPLETO DA APLICAÇÃO ==================== -->
   <script>
-    // =========================================================================
-    // 1. DADOS INICIAIS: MINI QUIZ E BANCO DE 30 QUESTÕES FATEC (HUMANAS)
-    // =========================================================================
+    (function () {
+      "use strict";
 
-    const MINI_QUIZ_QUESTIONS = [
-      {
-        id: 'mq-1',
-        subject: 'Português',
-        topic: 'Sintaxe',
-        question: 'Leia: "Embora o relatório tenha sido entregue no prazo, os resultados não atenderam às expectativas." A relação estabelecida entre as orações é de:',
-        options: {
-          A: 'Causa.',
-          B: 'Concessão.',
-          C: 'Finalidade.',
-          D: 'Condição.',
-          E: 'Conformidade.'
+      /* ---------------------------------------------------------
+         1. BANCO DE QUESTÕES OFICIAL ESTILO VESTIBULARES (24 QUESTÕES)
+      --------------------------------------------------------- */
+      const DEFAULT_QUESTIONS = [
+        {
+          id: "q1",
+          subject: "História",
+          exam: "Vestibular 2026/1",
+          difficulty: "Média",
+          context: "A Era Vargas (1930–1945) promoveu profunda reestruturação do Estado brasileiro, combinando centralização política, incentivo à industrialização de base e criação de legislação trabalhista consolidada na CLT (1943).",
+          prompt: "Sobre a política trabalhista e econômica implementada durante o governo de Getúlio Vargas, é correto afirmar que:",
+          options: [
+            "eliminou a intervenção estatal na economia, adotando o liberalismo clássico desde 1930.",
+            "articulou o trabalhismo e o controle sindical pelo Estado, ao mesmo tempo em que impulsionou indústrias estatais como a CSN.",
+            "garantiu ampla liberdade de greve e autonomia total dos sindicatos operários durante o Estado Novo.",
+            "priorizou exclusivamente a monocultura cafeeira em detrimento da diversificação industrial urbana.",
+            "extinguiu o salário mínimo e transferiu a previdência social inteiramente para bancos estrangeiros."
+          ],
+          answer: 1,
+          explanation: "Vargas consolidou o chamado 'trabalhismo' (concessão de direitos sociais atrelada ao controle dos sindicatos pelo Ministério do Trabalho) e investiu na industrialização de base, criando a Companhia Siderúrgica Nacional (CSN) e a Vale."
         },
-        correct: 'B',
-        explanation: 'A conjunção subordinativa "Embora" introduz uma oração adverbial concessiva, indicando um fato contrário ao esperado sem impedir a ação principal.'
-      },
-      {
-        id: 'mq-2',
-        subject: 'História',
-        topic: 'Era Vargas',
-        question: 'Durante o governo de Getúlio Vargas (1930–1945), a criação da Consolidação das Leis do Trabalho (CLT), em 1943, teve como característica central:',
-        options: {
-          A: 'A completa autonomia sindical frente ao Ministério do Trabalho.',
-          B: 'A extinção da Justiça do Trabalho e do salário mínimo nacional.',
-          C: 'A sistematização de direitos trabalhistas atrelada ao controle estatal sobre os sindicatos.',
-          D: 'A restrição dos direitos trabalhistas exclusivamente aos trabalhadores rurais.',
-          E: 'A adoção do liberalismo pleno nas relações entre empregadores e operários.'
+        {
+          id: "q2",
+          subject: "Geografia",
+          exam: "Vestibular 2026/1",
+          difficulty: "Média",
+          context: "As ilhas de calor urbanas são fenômenos microclimáticos frequentes nas grandes metrópoles brasileiras, como a Região Metropolitana de São Paulo, elevando em até 5 °C a temperatura nas áreas centrais em comparação com zonas periféricas arborizadas.",
+          prompt: "Assinale a alternativa que apresenta corretamente duas causas diretas da formação das ilhas de calor e uma medida mitigadora eficiente:",
+          options: [
+            "Alta densidade de asfalto/concreto e emissão de poluentes; ampliação de parques urbanos e telhados verdes.",
+            "Excesso de áreas verdes e baixa circulação de veículos; impermeabilização total do solo urbano.",
+            "Inversão térmica oceânica e chuvas ácidas; verticalização intensa sem recuos entre edifícios.",
+            "Baixa capacidade térmica do concreto e ventos alísios constantes; substituição de árvores por fachadas espelhadas.",
+            "Desmatamento da Amazônia e correntes marítimas frias; canalização fechada de todos os rios urbanos."
+          ],
+          answer: 0,
+          explanation: "Superfícies impermeáveis (asfalto e concreto) absorvem e retêm grande radiação solar, somadas ao calor gerado por veículos e indústrias. A arborização urbana e os telhados verdes aumentam a evapotranspiração e reduzem a temperatura local."
         },
-        correct: 'C',
-        explanation: 'A CLT reuniu direitos importantes (férias, jornada de 8h, carteira assinada), mas manteve os sindicatos tutelados pelo Estado varguista (peleguismo).'
-      },
-      {
-        id: 'mq-3',
-        subject: 'Geografia',
-        topic: 'Urbanização Brasileira',
-        question: 'O processo de metropolização no Brasil, intensificado na segunda metade do século XX, provocou o fenômeno da conurbação, que consiste na:',
-        options: {
-          A: 'Migração exclusiva de moradores das capitais para pequenas cidades agrícolas.',
-          B: 'Integração física e socioeconômica entre duas ou mais cidades vizinhas devido ao crescimento urbano.',
-          C: 'Substituição integral do setor de serviços pela agropecuária nas regiões metropolitanas.',
-          D: 'Redução da densidade demográfica nos centros industriais do Sudeste.',
-          E: 'Criação de reservas extrativistas no interior dos centros comerciais.'
+        {
+          id: "q3",
+          subject: "Matemática e Raciocínio Lógico",
+          exam: "Vestibular 2026/1",
+          difficulty: "Fácil",
+          context: "Uma equipe de desenvolvimento universitária precisa configurar um servidor em nuvem. O plano básico custa R$ 120,00 fixos por mês mais R$ 0,40 por gigabyte (GB) de tráfego excedente.",
+          prompt: "Se em determinado mês a fatura total do servidor foi de R$ 210,00, a quantidade de gigabytes excedentes consumidos nesse mês foi de:",
+          options: [
+            "180 GB",
+            "200 GB",
+            "225 GB",
+            "250 GB",
+            "300 GB"
+          ],
+          answer: 2,
+          explanation: "Montando a função do 1º grau: 120 + 0,40 · x = 210 → 0,40x = 90 → x = 90 / 0,40 = 225 GB."
         },
-        correct: 'B',
-        explanation: 'Conurbação ocorre quando a expansão urbana faz com que a mancha urbana de municípios vizinhos se encontre, como na Região Metropolitana de São Paulo.'
-      },
-      {
-        id: 'mq-4',
-        subject: 'Atualidades',
-        topic: 'Transição Energética',
-        question: 'No debate contemporâneo sobre transição energética e mudanças climáticas, a matriz elétrica brasileira destaca-se internacionalmente por:',
-        options: {
-          A: 'Depender majoritariamente de usinas termelétricas movidas a carvão mineral.',
-          B: 'Não possuir potencial para geração de energia solar ou eólica.',
-          C: 'Apresentar elevada participação de fontes renováveis, como hidrelétrica, eólica, solar e biomassa.',
-          D: 'Utilizar energia nuclear como principal fonte de abastecimento residencial.',
-          E: 'Ter eliminado completamente o uso de combustíveis fósseis no transporte rodoviário.'
+        {
+          id: "q4",
+          subject: "Português e Literatura",
+          exam: "Vestibular 2025/2",
+          difficulty: "Média",
+          context: "Leia o trecho de 'Vidas Secas', de Graciliano Ramos:\n\"Fabiano, você é um homem, exclamou em voz alta. Conteve-se, notou que os meninos estavam perto, com certeza iam admirar-se ouvindo-o falar só. E, pensando bem, ele não era homem: era apenas um cabra ocupado em guardar coisas dos outros.\"",
+          prompt: "No fragmento acima, a oscilação de Fabiano entre afirmar-se 'homem' e reconhecer-se como 'bicho/cabra' evidencia uma característica central do Romance de 30, a saber:",
+          options: [
+            "a idealização romântica do sertanejo como herói medieval invencível diante da natureza.",
+            "a denúncia social da desumanização provocada pela seca e pelas estruturas latifundiárias opressoras.",
+            "o culto parnasiano à forma perfeita e ao vocabulário rebuscado distante da realidade nordestina.",
+            "a exaltação ufanista da modernização agrária no interior nordestino durante a República Velha.",
+            "o escapismo simbolista voltado exclusivamente aos conflitos psicológicos da aristocracia urbana."
+          ],
+          answer: 1,
+          explanation: "Graciliano Ramos, expoente da segunda fase do Modernismo (Romance de 30), utiliza linguagem seca e concisa para denunciar a marginalização socioeconômica que reduz o retirante à condição sub-humana."
         },
-        correct: 'C',
-        explanation: 'Mais de 80% da matriz elétrica do Brasil provém de fontes renováveis, com forte crescimento das energias eólica e solar nos últimos anos.'
-      }
-    ];
-
-    const DEFAULT_QUESTIONS = [
-      {
-        id: 1,
-        subject: 'Português',
-        topic: 'Sintaxe',
-        exam: 'Fatec · Banco Humanas',
-        question: 'Leia: "Embora o relatório tenha sido entregue no prazo, os resultados não atenderam às expectativas." A relação estabelecida entre as orações é de:',
-        options: { A: 'Causa.', B: 'Concessão.', C: 'Finalidade.', D: 'Condição.', E: 'Conformidade.' },
-        correct: 'B',
-        explanation: '"Embora" é conjunção subordinativa concessiva: admite um fato contrário (entregar no prazo) sem impedir a oração principal.'
-      },
-      {
-        id: 2,
-        subject: 'Português',
-        topic: 'Concordância Verbal',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'Assinale a alternativa em que a concordância verbal está rigorosamente de acordo com a norma-padrão da língua portuguesa:',
-        options: {
-          A: 'Fazem dez anos que a unidade da Fatec foi inaugurada naquele município.',
-          B: 'Houveram muitos candidatos inscritos para o curso de Análise e Desenvolvimento de Sistemas.',
-          C: 'Aluga-se salas comerciais próximas à estação do metrô.',
-          D: 'Existe ainda muitas dúvidas sobre o edital do vestibular.',
-          E: 'Devem haver soluções mais sustentáveis para o transporte urbano.'
+        {
+          id: "q5",
+          subject: "Inglês",
+          exam: "Vestibular 2025/2",
+          difficulty: "Fácil",
+          context: "\"Artificial Intelligence tools are rapidly reshaping software engineering. Rather than replacing developers, these assistants automate repetitive boilerplate code, allowing engineers to focus on system architecture, security, and creative problem-solving.\"",
+          prompt: "De acordo com o texto em inglês, o principal impacto das ferramentas de Inteligência Artificial na engenharia de software é:",
+          options: [
+            "substituir completamente os engenheiros de software nos próximos anos.",
+            "eliminar a necessidade de testes de segurança e arquitetura de sistemas.",
+            "automatizar tarefas repetitivas de código, liberando profissionais para arquitetura e resolução criativa de problemas.",
+            "tornar o desenvolvimento de software mais lento devido à complexidade das ferramentas.",
+            "restringir o trabalho criativo apenas às máquinas autônomas."
+          ],
+          answer: 2,
+          explanation: "A expressão 'Rather than replacing developers' significa 'Em vez de substituir os desenvolvedores', e 'automate repetitive boilerplate code' indica a automação de código repetitivo."
         },
-        correct: 'C',
-        explanation: 'Na verdade, atenção à regra: "Alugam-se salas" seria o plural com partícula apassivadora, mas vamos conferir: em "Fazem dez anos" (impessoal: Faz), "Houveram" (impessoal: Houve), "Existe" (sujeito plural: Existem), "Devem haver" (impessoal: Deve haver). Entre as opções clássicas de prova, ajustemos para que apenas uma esteja impecável: veja o gabarito comentado.'
-      },
-      {
-        id: 3,
-        subject: 'Português',
-        topic: 'Crase',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'Assinale a alternativa em que o uso do acento grave indicativo de crase está CORRETO:',
-        options: {
-          A: 'O candidato dirigiu-se à sala de provas com antecedência.',
-          B: 'Entregamos o projeto técnico à Vossa Senhoria ontem à tarde.',
-          C: 'O curso é destinado à estudantes que concluíram o ensino médio.',
-          D: 'Começaremos à revisar os conteúdos de Geografia amanhã.',
-          E: 'Fomos à pé até o campus universitário.'
+        {
+          id: "q6",
+          subject: "Matemática e Raciocínio Lógico",
+          exam: "Vestibular 2025/2",
+          difficulty: "Média",
+          context: "Em uma turma de 60 estudantes de Ciência de Dados universitária, 38 dominam Python, 27 dominam SQL e 15 dominam ambas as linguagens.",
+          prompt: "Escolhendo-se ao acaso um estudante dessa turma, a probabilidade de ele NÃO dominar nenhuma dessas duas linguagens é de:",
+          options: [
+            "10%",
+            "15%",
+            "16,7%",
+            "20%",
+            "25%"
+          ],
+          answer: 2,
+          explanation: "Pelo princípio da inclusão-exclusão: n(Python ∪ SQL) = 38 + 27 - 15 = 50 alunos. Logo, 60 - 50 = 10 alunos não dominam nenhuma das duas. Probabilidade = 10/60 = 1/6 ≈ 16,67% (16,7%)."
         },
-        correct: 'A',
-        explanation: 'Quem se dirige, dirige-se "a" algum lugar + artigo definido feminino "a" antes de "sala" = "à sala". Não ocorre crase antes de pronome de tratamento, plural sem artigo, verbo ou palavra masculina.'
-      },
-      {
-        id: 4,
-        subject: 'Português',
-        topic: 'Interpretação de Texto',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'Em textos argumentativos, o uso de operadores argumentativos como "portanto", "logo" e "por conseguinte" tem a função principal de:',
-        options: {
-          A: 'Introduzir uma oposição radical ao argumento anterior.',
-          B: 'Estabelecer uma conclusão decorrente das premissas apresentadas.',
-          C: 'Indicar uma dúvida ou hipótese sem comprovação.',
-          D: 'Retomar cronologicamente fatos históricos do século XIX.',
-          E: 'Substituir substantivos próprios para evitar repetição.'
+        {
+          id: "q7",
+          subject: "Física",
+          exam: "Vestibular 2025/2",
+          difficulty: "Média",
+          context: "Um automóvel elétrico de massa 1.500 kg trafega em uma via retilínea horizontal com velocidade constante de 20 m/s (72 km/h) quando o motorista aciona os freios regenerativos, parando completamente após percorrer 50 metros em desaceleração uniforme.",
+          prompt: "O módulo da força resultante média que atuou sobre o veículo durante a frenagem foi de:",
+          options: [
+            "3.000 N",
+            "4.500 N",
+            "6.000 N",
+            "7.500 N",
+            "12.000 N"
+          ],
+          answer: 2,
+          explanation: "Pela equação de Torricelli: v² = v₀² + 2·a·Δs → 0 = 20² + 2·a·50 → 100a = -400 → |a| = 4 m/s². Pela 2ª Lei de Newton: F = m·a = 1500 · 4 = 6.000 N."
         },
-        correct: 'B',
-        explanation: 'Conjunções conclusivas ("portanto", "logo", "por conseguinte") articulam o fechamento lógico de um raciocínio.'
-      },
-      {
-        id: 5,
-        subject: 'Português',
-        topic: 'Regência Verbal',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'De acordo com a norma-padrão, o verbo "assistir" no sentido de "presenciar, ver" exige complemento regido pela preposição "a". Assinale a frase correta:',
-        options: {
-          A: 'Os alunos assistiram o seminário sobre inteligência artificial.',
-          B: 'O filme a que assistimos ontem aborda ética na tecnologia.',
-          C: 'Todos assistiram os debates com muita atenção.',
-          D: 'A palestra que assistimos foi ministrada por ex-alunos.',
-          E: 'Assistimos o nascer do sol na serra.'
+        {
+          id: "q8",
+          subject: "Química",
+          exam: "Vestibular 2025/1",
+          difficulty: "Média",
+          context: "O etanol hidratado (C₂H₅OH) produzido a partir da cana-de-açúcar é amplamente utilizado como biocombustível no Brasil, apresentando balanço de carbono mais favorável que a gasolina.",
+          prompt: "Na combustão completa de 1 mol de etanol (C₂H₅OH), a proporção estequiométrica correta entre os reagentes (etanol : O₂) e os produtos (CO₂ : H₂O) é, respectivamente:",
+          options: [
+            "1 : 2 e 2 : 2",
+            "1 : 3 e 2 : 3",
+            "1 : 3 e 3 : 2",
+            "2 : 5 e 4 : 6",
+            "1 : 4 e 2 : 3"
+          ],
+          answer: 1,
+          explanation: "Equação balanceada: 1 C₂H₅OH + 3 O₂ → 2 CO₂ + 3 H₂O. Conferindo átomos: 2 C, 6 H e 7 O em ambos os lados."
         },
-        correct: 'B',
-        explanation: 'No sentido de ver/presenciar, "assistir" é transitivo indireto (assistir a algo), exigindo a preposição "a" antes do pronome relativo "que" ("a que assistimos").'
-      },
-      {
-        id: 6,
-        subject: 'Português',
-        topic: 'Figuras de Linguagem',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'Na frase: "A cidade inteira acordou ansiosa para o resultado do vestibular", identifica-se a figura de linguagem denominada:',
-        options: {
-          A: 'Metonímia, pois o continente ("cidade") substitui o conteúdo ("habitantes").',
-          B: 'Antítese, pela aproximação de palavras de sentidos opostos.',
-          C: 'Eufemismo, por suavizar uma notícia desagradável.',
-          D: 'Onomatopeia, pela reprodução de sons urbanos.',
-          E: 'Pleonasmo, pela repetição desnecessária de ideias.'
+        {
+          id: "q9",
+          subject: "Biologia",
+          exam: "Vestibular 2025/1",
+          difficulty: "Fácil",
+          context: "O descarte irregular de esgoto doméstico e fertilizantes agrícolas em rios e represas provoca o enriquecimento excessivo da água por nutrientes como nitrogênio e fósforo, desencadeando o fenômeno da eutrofização.",
+          prompt: "Na etapa crítica da eutrofização artificial, a mortandade de peixes e organismos aquáticos aeróbicos ocorre diretamente devido à:",
+          options: [
+            "redução drástica do oxigênio dissolvido na água causada pela proliferação de bactérias decompositoras aeróbicas.",
+            "diminuição imediata da temperatura da água provocada pelo bloqueio da luz solar pelas algas.",
+            "transformação direta do nitrogênio atmosférico em metais pesados tóxicos no fundo do rio.",
+            "elevação extrema da salinidade da água doce decorrente da fotossíntese das cianobactérias.",
+            "ausência total de matéria orgânica disponível para a cadeia alimentar aquática."
+          ],
+          answer: 0,
+          explanation: "O excesso de nutrientes causa proliferação de algas (floração), que bloqueiam a luz e morrem. A decomposição dessa matéria orgânica por bactérias aeróbicas consome quase todo o O₂ dissolvido, asfixiando os peixes."
         },
-        correct: 'A',
-        explanation: 'Metonímia ocorre quando se emprega um termo por outro com o qual mantém relação de proximidade (o lugar pelos seus habitantes).'
-      },
-      {
-        id: 7,
-        subject: 'História',
-        topic: 'Brasil Colônia',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A economia açucareira no Brasil Colonial (séculos XVI e XVII) organizou-se com base no sistema de plantation, caracterizado por:',
-        options: {
-          A: 'Pequenas propriedades policultoras voltadas ao mercado interno e trabalho assalariado.',
-          B: 'Latifúndio monocultor, mão de obra escravizada e produção voltada à exportação.',
-          C: 'Indústria manufatureira urbana e livre comércio com todas as nações europeias.',
-          D: 'Exploração exclusivamente aurífera no litoral nordestino.',
-          E: 'Cooperativas agrícolas administradas por comunidades indígenas.'
+        {
+          id: "q10",
+          subject: "Multidisciplinar",
+          exam: "Vestibular 2026/1",
+          difficulty: "Média",
+          context: "A transição energética global impulsionou a demanda por minerais críticos como lítio, cobalto e terras-raras, essenciais para baterias de veículos elétricos e turbinas eólicas.",
+          prompt: "Considerando aspectos geopolíticos e ambientais da transição energética atual, é correto afirmar que:",
+          options: [
+            "a extração de lítio e terras-raras dispensa licenciamento ambiental por se tratar de energia limpa.",
+            "a concentração do refino desses minerais em poucos países gera novas disputas geopolíticas e exige cadeias produtivas sustentáveis.",
+            "o Brasil não possui reservas relevantes de lítio, nióbio ou grafite em seu território.",
+            "as baterias de íons de lítio têm vida útil infinita e não geram passivos de reciclagem.",
+            "a energia eólica e solar substituíram integralmente os combustíveis fósseis na matriz elétrica mundial."
+          ],
+          answer: 1,
+          explanation: "Embora reduzam emissões na operação, tecnologias verdes dependem de minerais estratégicos cuja cadeia de refino é altamente concentrada (especialmente na Ásia), criando novos desafios geopolíticos e socioambientais."
         },
-        correct: 'B',
-        explanation: 'O tripé da plantation colonial era: grande propriedade (latifúndio), monocultura (cana-de-açúcar), trabalho escravizado e foco no mercado externo.'
-      },
-      {
-        id: 8,
-        subject: 'História',
-        topic: 'Segundo Reinado',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A Lei Eusébio de Queirós (1850), aprovada durante o Segundo Reinado no Brasil, determinou:',
-        options: {
-          A: 'A libertação imediata de todos os escravizados nascidos no Brasil.',
-          B: 'A proibição definitiva do tráfico transatlântico de escravizados para o Brasil.',
-          C: 'A concessão de terras gratuitas aos imigrantes europeus nas cidades.',
-          D: 'O fim da monarquia constitucional e a proclamação da República.',
-          E: 'A liberdade aos escravizados com mais de sessenta anos de idade.'
+        {
+          id: "q11",
+          subject: "História",
+          exam: "Vestibular 2025/1",
+          difficulty: "Média",
+          context: "A Constituição Brasileira de 1988, apelidada de 'Constituição Cidadã' por Ulysses Guimarães, representou o marco jurídico da redemocratização após 21 anos de regime militar.",
+          prompt: "Entre as inovações garantidas pelo texto original da Constituição de 1988, destaca-se:",
+          options: [
+            "a criação do voto censitário baseado na renda anual dos cidadãos alfabetizados.",
+            "a extensão do direito de voto facultativo aos analfabetos e aos jovens de 16 e 17 anos.",
+            "o restabelecimento das eleições indiretas para governadores e prefeitos das capitais.",
+            "a extinção do Sistema Único de Saúde (SUS) em favor de planos privados obrigatórios.",
+            "a supressão dos direitos territoriais originários dos povos indígenas."
+          ],
+          answer: 1,
+          explanation: "A Constituição de 1988 ampliou historicamente a cidadania política no Brasil ao instituir o sufrágio universal com voto facultativo para analfabetos e jovens entre 16 e 17 anos."
         },
-        correct: 'B',
-        explanation: 'Promulgada em 1850, a Lei Eusébio de Queirós extinguiu o tráfico negreiro internacional para o Brasil, liberando capitais para outros investimentos.'
-      },
-      {
-        id: 9,
-        subject: 'História',
-        topic: 'República Velha',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'Durante a Primeira República no Brasil (1889–1930), o fenômeno do "coronelismo" apoiava-se no chamado "voto de cabresto", que consistia:',
-        options: {
-          A: 'No voto secreto e eletrônico auditado pelo Tribunal Superior Eleitoral.',
-          B: 'No controle exercido por chefes políticos locais sobre os eleitores, por meio de favores ou coerção.',
-          C: 'Na obrigatoriedade do voto feminino em todas as eleições municipais.',
-          D: 'Na eleição direta dos governadores apenas pelos trabalhadores fabris.',
-          E: 'Na proibição de qualquer vínculo entre fazendeiros e autoridades municipais.'
+        {
+          id: "q12",
+          subject: "Geografia",
+          exam: "Vestibular 2025/2",
+          difficulty: "Fácil",
+          context: "O agronegócio brasileiro apresenta elevada produtividade na região Centro-Oeste, apoiado por corredores logísticos de exportação que conectam áreas produtoras aos portos do Arco Norte e do Sudeste.",
+          prompt: "Um dos principais gargalos estruturais historicamente apontados para a competitividade logística do Brasil no escoamento de cargas é:",
+          options: [
+            "a dependência excessiva do modal rodoviário em detrimento de ferrovias e hidrovias de longa distância.",
+            "o excesso de malha ferroviária de alta velocidade subutilizada na região Norte.",
+            "a ausência de portos marítimos profundos ao longo de todo o litoral brasileiro.",
+            "a proibição legal do transporte intermodal entre rodovias e ferrovias.",
+            "o custo zero dos fretes rodoviários em estradas não pavimentadas."
+          ],
+          answer: 0,
+          explanation: "Mais de 60% da matriz de transporte de cargas no Brasil concentra-se no modal rodoviário, que possui maior custo por tonelada/km e maior emissão de CO₂ para longas distâncias."
         },
-        correct: 'B',
-        explanation: 'Como o voto era aberto (não secreto), os coronéis pressionavam os eleitores de seus currais eleitorais a votarem nos candidatos indicados.'
-      },
-      {
-        id: 10,
-        subject: 'História',
-        topic: 'Era Vargas',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A Revolução Constitucionalista de 1932, ocorrida em São Paulo, teve como principal reivindicação:',
-        options: {
-          A: 'A implantação imediata do regime socialista no estado de São Paulo.',
-          B: 'A convocação de uma Assembleia Nacional Constituinte e o fim do governo provisório discricionário de Vargas.',
-          C: 'O retorno da monarquia parlamentarista liderada pela família imperial.',
-          D: 'A transferência da capital federal do Rio de Janeiro para Santos.',
-          E: 'O fechamento de todas as universidades paulistas.'
+        {
+          id: "q13",
+          subject: "Matemática e Raciocínio Lógico",
+          exam: "Vestibular 2025/1",
+          difficulty: "Difícil",
+          context: "Um sistema de autenticação gera senhas temporárias formadas por 2 letras distintas escolhidas entre {A, B, C, D, E} seguidas de 3 algarismos distintos escolhidos entre {1, 2, 3, 4}.",
+          prompt: "O número total de senhas distintas que esse sistema pode gerar é:",
+          options: [
+            "120",
+            "240",
+            "360",
+            "480",
+            "600"
+          ],
+          answer: 3,
+          explanation: "Pelo Princípio Fundamental da Contagem: 5 opções para 1ª letra × 4 opções para 2ª letra = 20 pares de letras. Para os 3 algarismos distintos: 4 × 3 × 2 = 24. Total = 20 × 24 = 480 senhas."
         },
-        correct: 'B',
-        explanation: 'Os paulistas exigiam uma nova Constituição e o fim das intervenções federais nomeadas por Getúlio Vargas após 1930.'
-      },
-      {
-        id: 11,
-        subject: 'História',
-        topic: 'Ditadura Militar no Brasil',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'O Ato Institucional nº 5 (AI-5), decretado em dezembro de 1968 no Brasil, representou:',
-        options: {
-          A: 'A abertura política lenta, gradual e segura com anistia aos exilados.',
-          B: 'O recrudescimento da repressão, fechamento do Congresso Nacional e suspensão do habeas corpus para crimes políticos.',
-          C: 'A convocação de eleições diretas para presidente da República em 1969.',
-          D: 'O fim da censura prévia aos meios de comunicação e às artes.',
-          E: 'A legalização de todos os partidos políticos de oposição.'
+        {
+          id: "q14",
+          subject: "Português e Literatura",
+          exam: "Vestibular 2026/1",
+          difficulty: "Fácil",
+          context: "Observe a frase: \"Embora os investimentos em energia solar tenham crescido, ainda há desafios na distribuição elétrica.\"",
+          prompt: "A conjunção 'Embora' estabelece entre as orações uma relação semântica de:",
+          options: [
+            "condição",
+            "consequência",
+            "concessão",
+            "proporcionalidade",
+            "finalidade"
+          ],
+          answer: 2,
+          explanation: "'Embora' é uma conjunção subordinativa concessiva, introduzindo um fato contrário à ação principal sem impedir que esta se realize."
         },
-        correct: 'B',
-        explanation: 'O AI-5 marcou o início dos chamados "Anos de Chumbo", ampliando poderes excepcionais do Executivo e restringindo direitos civis.'
-      },
-      {
-        id: 12,
-        subject: 'História',
-        topic: 'Revolução Industrial',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A Primeira Revolução Industrial, iniciada na Inglaterra na segunda metade do século XVIII, teve como principais símbolos tecnológicos e energéticos:',
-        options: {
-          A: 'A energia nuclear, a robótica e a internet.',
-          B: 'O motor a combustão interna, o petróleo e a linha de montagem fordista.',
-          C: 'A máquina a vapor, o carvão mineral e a mecanização da indústria têxtil.',
-          D: 'A energia fotovoltaica, os biocombustíveis e a biotecnologia.',
-          E: 'O telégrafo sem fio, o alumínio e a energia hidrelétrica.'
+        {
+          id: "q15",
+          subject: "Inglês",
+          exam: "Vestibular 2025/1",
+          difficulty: "Média",
+          context: "\"Cybersecurity experts warn that phishing attacks remain the primary entry point for ransomware in small businesses, often exploiting human trust rather than technical flaws.\"",
+          prompt: "Segundo o alerta dos especialistas em cibersegurança no texto, os ataques de phishing ocorrem principalmente porque:",
+          options: [
+            "exploram a confiança humana com mais frequência do que falhas técnicas.",
+            "afetam exclusivamente grandes corporações governamentais.",
+            "não têm relação com a entrada de ransomware nas empresas.",
+            "dependem apenas de defeitos físicos nos cabos de rede.",
+            "foram totalmente bloqueados pelos antivírus modernos."
+          ],
+          answer: 0,
+          explanation: "O trecho 'often exploiting human trust rather than technical flaws' traduz-se literalmente por 'frequentemente explorando a confiança humana em vez de falhas técnicas'."
         },
-        correct: 'C',
-        explanation: 'Carvão mineral, máquina a vapor (aperfeiçoada por James Watt) e teares mecânicos definiram a primeira fase industrial inglesa.'
-      },
-      {
-        id: 13,
-        subject: 'História',
-        topic: 'Guerra Fria',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A chamada "Corrida Espacial" durante a Guerra Fria (1947–1991) refletia:',
-        options: {
-          A: 'A cooperação pacífica e irrestrita entre EUA e URSS para compartilhar segredos militares.',
-          B: 'A disputa tecnológica, científica e ideológica entre Estados Unidos e União Soviética pela hegemonia mundial.',
-          C: 'O desinteresse das superpotências pelo desenvolvimento de satélites e foguetes.',
-          D: 'A liderança exclusiva dos países europeus na exploração lunar.',
-          E: 'O fim das tensões nucleares logo após a Segunda Guerra Mundial.'
+        {
+          id: "q16",
+          subject: "Física",
+          exam: "Vestibular 2024/2",
+          difficulty: "Fácil",
+          context: "Um laboratório de informática universitária possui 20 computadores idênticos, cada um operando com potência média de 250 W durante 4 horas por dia.",
+          prompt: "O consumo total de energia elétrica desses 20 computadores em um dia de funcionamento é de:",
+          options: [
+            "5 kWh",
+            "10 kWh",
+            "15 kWh",
+            "20 kWh",
+            "25 kWh"
+          ],
+          answer: 3,
+          explanation: "Potência total = 20 × 250 W = 5.000 W = 5 kW. Energia = Potência × tempo = 5 kW × 4 h = 20 kWh."
         },
-        correct: 'B',
-        explanation: 'Marcos como o Sputnik (URSS, 1957) e a chegada à Lua (EUA, 1969) serviam para demonstrar superioridade técnica e ideológica.'
-      },
-      {
-        id: 14,
-        subject: 'Geografia',
-        topic: 'Industrialização de São Paulo',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'Um dos fatores históricos decisivos para que o estado de São Paulo liderasse a industrialização brasileira no início do século XX foi:',
-        options: {
-          A: 'A ausência de ferrovias e de energia elétrica na capital paulista.',
-          B: 'O acúmulo de capitais oriundos da cafeicultura, aliado à infraestrutura ferroviária e à mão de obra imigrante.',
-          C: 'A proibição de investimentos estrangeiros no setor de transportes.',
-          D: 'O isolamento geográfico em relação ao porto de Santos.',
-          E: 'A predominância da mineração de ouro no Vale do Paraíba.'
+        {
+          id: "q17",
+          subject: "Química",
+          exam: "Vestibular 2024/2",
+          difficulty: "Fácil",
+          context: "A chuva ácida é um problema ambiental agravado pela queima de combustíveis fósseis ricos em enxofre e nitrogênio, liberando óxidos como SO₂ e NO₂ na atmosfera.",
+          prompt: "Em contato com a umidade atmosférica, esses óxidos ácidos formam principalmente:",
+          options: [
+            "ácido sulfúrico (H₂SO₄) e ácido nítrico (HNO₃), reduzindo o pH da água da chuva.",
+            "hidróxido de sódio (NaOH) e amônia (NH₃), tornando a chuva fortemente alcalina.",
+            "cloreto de sódio (NaCl) e gás metano (CH₄), neutralizando a acidez dos solos.",
+            "ácido clorídrico (HCl) puro e gás hélio (He), elevando o pH para valores acima de 10.",
+            "carbonato de cálcio (CaCO₃), restaurando monumentos históricos de mármore."
+          ],
+          answer: 0,
+          explanation: "Óxidos ácidos como SO₃ e NO₂ reagem com a água da chuva originando H₂SO₄ e HNO₃, responsáveis por baixar o pH da precipitação abaixo de 5,6."
         },
-        correct: 'B',
-        explanation: 'A economia cafeeira gerou capital, mercado consumidor, ferrovias até o Porto de Santos e atraiu imigrantes que formaram o operariado inicial.'
-      },
-      {
-        id: 15,
-        subject: 'Geografia',
-        topic: 'Clima e Biomas',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'O bioma Cerrado, amplamente presente no Planalto Central brasileiro, caracteriza-se naturalmente por:',
-        options: {
-          A: 'Clima equatorial superúmido sem estação seca definida.',
-          B: 'Clima tropical típico (com verão chuvoso e inverno seco), solos ácidos e vegetação de árvores tortuosas com casca grossa.',
-          C: 'Vegetação de coníferas adaptadas a nevascas rigorosas.',
-          D: 'Solos extremamente férteis de terra roxa em toda a sua extensão e ausência de queimadas naturais.',
-          E: 'Manguezais costeiros submetidos à variação diária das marés.'
+        {
+          id: "q18",
+          subject: "Biologia",
+          exam: "Vestibular 2024/2",
+          difficulty: "Média",
+          context: "As vacinas de RNA mensageiro (mRNA) representaram um marco biotecnológico recente no combate a doenças infecciosas virais.",
+          prompt: "O mecanismo de ação dessas vacinas no organismo humano consiste em:",
+          options: [
+            "inserir o vírus vivo e plenamente ativo para causar infecção grave controlada.",
+            "fornecer instruções genéticas para que as células produzam uma proteína viral inofensiva, estimulando a resposta imune.",
+            "alterar permanentemente o DNA nuclear humano para impedir a divisão celular.",
+            "substituir os linfócitos B e T por antibióticos sintéticos de longa duração.",
+            "destruir todas as bactérias da microbiota intestinal para evitar inflamações."
+          ],
+          answer: 1,
+          explanation: "O mRNA vacinal é traduzido nos ribossomos do citoplasma celular para produzir uma proteína antigênica (como a Spike), ativando anticorpos e memória imunológica sem entrar no núcleo celular."
         },
-        correct: 'B',
-        explanation: 'O Cerrado possui duas estações bem marcadas (seca e chuvosa), solos latossolos ácidos e vegetação tropófila adaptada ao fogo natural.'
-      },
-      {
-        id: 16,
-        subject: 'Geografia',
-        topic: 'Recursos Hídricos',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'O Sistema Aquífero Guarani representa uma das maiores reservas subterrâneas de água doce do mundo, estendendo-se pelo subsolo do Brasil e de outros três países sul-americanos:',
-        options: {
-          A: 'Chile, Peru e Equador.',
-          B: 'Argentina, Paraguai e Uruguai.',
-          C: 'Colômbia, Venezuela e Bolívia.',
-          D: 'Guiana, Suriname e Peru.',
-          E: 'Bolívia, Chile e Colômbia.'
+        {
+          id: "q19",
+          subject: "Matemática e Raciocínio Lógico",
+          exam: "Vestibular 2024/2",
+          difficulty: "Média",
+          context: "Considere a proposição lógica composta: \"Se o algoritmo é otimizado, então o tempo de resposta diminui.\"",
+          prompt: "Do ponto de vista da Lógica Formal, uma proposição logicamente equivalente à afirmação acima é:",
+          options: [
+            "Se o tempo de resposta diminui, então o algoritmo é otimizado.",
+            "Se o algoritmo não é otimizado, então o tempo de resposta não diminui.",
+            "Se o tempo de resposta não diminui, então o algoritmo não é otimizado.",
+            "O algoritmo é otimizado e o tempo de resposta não diminui.",
+            "O algoritmo não é otimizado e o tempo de resposta diminui."
+          ],
+          answer: 2,
+          explanation: "A equivalência contrapositiva de 'Se P, então Q' (P → Q) é 'Se não Q, então não P' (~Q → ~P)."
         },
-        correct: 'B',
-        explanation: 'O Aquífero Guarani abrange áreas do Centro-Sul do Brasil, além de Argentina, Paraguai e Uruguai.'
-      },
-      {
-        id: 17,
-        subject: 'Geografia',
-        topic: 'Demografia',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A transição demográfica observada no Brasil nas últimas décadas indica:',
-        options: {
-          A: 'Aumento acelerado da taxa de natalidade e redução da expectativa de vida.',
-          B: 'Queda nas taxas de fecundidade e natalidade, acompanhada pelo envelhecimento gradual da população.',
-          C: 'Predomínio absoluto de crianças de 0 a 10 anos na base da pirâmide etária.',
-          D: 'Crescimento vegetativo superior a 5% ao ano em todas as regiões.',
-          E: 'Retorno da população urbana para áreas rurais não mecanizadas.'
+        {
+          id: "q20",
+          subject: "História",
+          exam: "Vestibular 2024/2",
+          difficulty: "Fácil",
+          context: "A Revolução Industrial iniciada na Inglaterra na segunda metade do século XVIII transformou radicalmente as relações de trabalho, a urbanização e o ritmo produtivo.",
+          prompt: "Entre os fatores que explicam o pioneirismo inglês na Primeira Revolução Industrial, destaca-se:",
+          options: [
+            "a abundância de reservas de carvão mineral e ferro, aliada ao acúmulo de capitais e à estabilidade política pós-Revolução Gloriosa.",
+            "a abolição imediata do trabalho assalariado e a distribuição igualitária das fábricas aos operários.",
+            "o isolamento comercial total da Inglaterra em relação às rotas marítimas internacionais.",
+            "a predominância da energia nuclear e da robótica digital nas primeiras indústrias têxteis.",
+            "a inexistência de mão de obra disponível nas cidades devido à reforma agrária camponesa."
+          ],
+          answer: 0,
+          explanation: "A Inglaterra reuniu condições ideais: jazidas de carvão e ferro, capital acumulado pelo comércio marítimo, mão de obra liberada pelos cercamentos (enclosures) e instituições favoráveis aos negócios."
         },
-        correct: 'B',
-        explanation: 'Com urbanização, acesso à saúde e maior escolaridade, a taxa de fecundidade caiu abaixo do nível de reposição e a população idosa cresce rapidamente.'
-      },
-      {
-        id: 18,
-        subject: 'Geografia',
-        topic: 'Globalização e Blocos',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'No contexto da globalização produtiva, a desconcentração industrial ocorre quando empresas transferem fábricas das metrópoles tradicionais para cidades médias ou outros países buscando:',
-        options: {
-          A: 'Impostos mais elevados e terrenos urbanos mais caros.',
-          B: 'Incentivos fiscais, custos menores de terreno/mão de obra e boa logística de escoamento.',
-          C: 'Afastamento completo das redes de telecomunicações e rodovias.',
-          D: 'Redução da produtividade tecnológica.',
-          E: 'Eliminação de qualquer integração com o mercado global.'
+        {
+          id: "q21",
+          subject: "Geografia",
+          exam: "Vestibular 2026/1",
+          difficulty: "Média",
+          context: "A transição demográfica brasileira nas últimas décadas caracteriza-se pela queda acentuada da taxa de fecundidade e pelo aumento da expectativa de vida.",
+          prompt: "Uma consequência socioeconômica direta desse processo para o Brasil nas próximas décadas é:",
+          options: [
+            "o estreitamento da base da pirâmide etária e o aumento da demanda por políticas de previdência e saúde para idosos.",
+            "o crescimento explosivo da população infantil e a redução da idade média da população.",
+            "o fim definitivo da urbanização com retorno maciço da população para áreas rurais.",
+            "a diminuição da proporção de idosos em relação à população economicamente ativa.",
+            "o aumento contínuo da taxa de natalidade acima de 6 filhos por mulher."
+          ],
+          answer: 0,
+          explanation: "Com menos nascimentos e maior longevidade, o Brasil passa por rápido envelhecimento populacional, exigindo adaptações previdenciárias, urbanas e no sistema de saúde."
         },
-        correct: 'B',
-        explanation: 'A chamada "guerra fiscal" e os custos elevados das grandes metrópoles impulsionam indústrias para o interior e regiões com incentivos.'
-      },
-      {
-        id: 19,
-        subject: 'Geografia',
-        topic: 'Meio Ambiente',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'O fenômeno urbano das "ilhas de calor" consiste na elevação das temperaturas médias nas áreas centrais das grandes cidades em comparação com seu entorno rural, devido principalmente:',
-        options: {
-          A: 'Ao excesso de parques florestais e lagos artificiais no centro.',
-          B: 'À intensa impermeabilização do solo (asfalto e concreto), verticalização e redução da cobertura vegetal.',
-          C: 'À altitude muito superior dos bairros centrais em relação às serras.',
-          D: 'À passagem constante de frentes frias polares apenas pelos centros comerciais.',
-          E: 'Ao uso exclusivo de veículos elétricos silenciosos.'
+        {
+          id: "q22",
+          subject: "Português e Literatura",
+          exam: "Vestibular 2025/2",
+          difficulty: "Média",
+          context: "Assinale a alternativa em que o emprego do sinal indicativo de crase está plenamente de acordo com a norma-padrão da língua portuguesa:",
+          prompt: "Escolha a frase gramaticalmente correta:",
+          options: [
+            "Os candidatos dirigiram-se à sala de provas às 12h30 para assistir à palestra.",
+            "O edital refere-se à todos os cursos superiores de tecnologia universitária.",
+            "Entregamos o projeto final à ela antes do prazo estipulado.",
+            "A partir de amanhã, começaremos à estudar para o simulado geral.",
+            "Fomos à São Paulo conhecer o campus histórico da instituição."
+          ],
+          answer: 0,
+          explanation: "Em 'dirigiram-se à sala' (a + a sala), 'às 12h30' (locução adverbial feminina de hora exata) e 'assistir à palestra' (no sentido de ver/presenciar, exige preposição 'a'), a crase é obrigatória."
         },
-        correct: 'B',
-        explanation: 'Asfalto e concreto absorvem e irradiam mais calor, enquanto a falta de árvores diminui a evapotranspiração e o resfriamento natural.'
-      },
-      {
-        id: 20,
-        subject: 'Filosofia e Sociologia',
-        topic: 'Sociologia Clássica',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'Para o sociólogo francês Émile Durkheim, o objeto de estudo fundamental da Sociologia são os "fatos sociais", que se definem por três características principais:',
-        options: {
-          A: 'Subjetividade, individualidade e espontaneidade biológica.',
-          B: 'Coercitividade, exterioridade e generalidade.',
-          C: 'Religiosidade, hereditariedade e isolamento geográfico.',
-          D: 'Criatividade artística, improviso e liberdade absoluta.',
-          E: 'Neutralidade econômica, acaso e intuição psicológica.'
+        {
+          id: "q23",
+          subject: "Multidisciplinar",
+          exam: "Vestibular 2025/2",
+          difficulty: "Fácil",
+          context: "A Economia Circular propõe substituir o modelo linear tradicional ('extrair, produzir, descartar') por sistemas regenerativos baseados em ecodesign, reutilização, remanufatura e reciclagem.",
+          prompt: "No setor de tecnologia da informação, uma prática alinhada aos princípios da Economia Circular é:",
+          options: [
+            "a obsolescência programada para forçar a troca anual de smartphones funcionais.",
+            "a logística reversa de lixo eletrônico (e-waste) para recuperação de metais preciosos e recondicionamento de hardware.",
+            "o descarte de baterias de íons de lítio em aterros sanitários comuns.",
+            "a fabricação de equipamentos com peças coladas que impedem qualquer reparo.",
+            "o aumento do consumo energético de data centers sem reaproveitamento térmico."
+          ],
+          answer: 1,
+          explanation: "A logística reversa e o recondicionamento estendem o ciclo de vida dos eletrônicos e recuperam matérias-primas valiosas, reduzindo a extração mineral."
         },
-        correct: 'B',
-        explanation: 'Segundo Durkheim, fatos sociais são externos ao indivíduo, impõem-se de forma coercitiva (leis, costumes, língua) e são gerais na sociedade.'
-      },
-      {
-        id: 21,
-        subject: 'Filosofia e Sociologia',
-        topic: 'Filosofia Moderna',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A célebre formulação cartesiana "Penso, logo existo" (Cogito, ergo sum), de René Descartes, expressa:',
-        options: {
-          A: 'A negação completa da razão humana como fonte de conhecimento.',
-          B: 'A busca por uma verdade primeira e indubitável alcançada por meio da dúvida metódica.',
-          C: 'A defesa de que apenas os sentidos físicos garantem a certeza científica.',
-          D: 'A submissão da filosofia aos dogmas medievais sem questionamento.',
-          E: 'O desprezo pela matemática e pela geometria.'
-        },
-        correct: 'B',
-        explanation: 'Ao duvidar de tudo, Descartes percebe que não pode duvidar de que está pensando; logo, existe enquanto ser pensante (racionalismo).'
-      },
-      {
-        id: 22,
-        subject: 'Filosofia e Sociologia',
-        topic: 'Mundo do Trabalho',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'O modelo produtivo conhecido como Toyotismo, surgido no Japão após a Segunda Guerra Mundial, diferencia-se do Fordismo tradicional por adotar:',
-        options: {
-          A: 'Grandes estoques de peças e produção em massa padronizada sem flexibilidade.',
-          B: 'Produção enxuta sob demanda (just in time), flexibilização e trabalhadores multifuncionais.',
-          C: 'Abolição total de metas de qualidade e de automação industrial.',
-          D: 'Trabalho artesanal individual sem divisão de tarefas.',
-          E: 'Isolamento tecnológico em relação à microeletrônica.'
-        },
-        correct: 'B',
-        explanation: 'O Toyotismo introduziu o sistema just in time (produzir conforme a demanda, evitando estoques) e equipes polivalentes.'
-      },
-      {
-        id: 23,
-        subject: 'Filosofia e Sociologia',
-        topic: 'Cidadania e Direitos',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A Constituição Federal brasileira de 1988 ficou conhecida como "Constituição Cidadã" porque:',
-        options: {
-          A: 'Restringiu o direito ao voto apenas aos cidadãos com ensino superior.',
-          B: 'Ampliou os direitos sociais, civis e políticos após o período da ditadura militar, instituindo o SUS e garantias fundamentais.',
-          C: 'Extinguiu os direitos trabalhistas previstos desde a década de 1940.',
-          D: 'Centralizou todo o poder legislativo nas mãos do Poder Executivo.',
-          E: 'Proibiu a existência de conselhos municipais e associações civis.'
-        },
-        correct: 'B',
-        explanation: 'Promulgada em 5 de outubro de 1988, consolidou a redemocratização do Brasil com amplo rol de direitos fundamentais.'
-      },
-      {
-        id: 24,
-        subject: 'Filosofia e Sociologia',
-        topic: 'Ética e Tecnologia',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'O debate ético contemporâneo sobre algoritmos de Inteligência Artificial na seleção de empregos e concessão de crédito alerta principalmente para o risco de:',
-        options: {
-          A: 'Eliminação automática de qualquer desigualdade histórica sem supervisão humana.',
-          B: 'Reprodução e amplificação de vieses discriminatórios presentes nos dados históricos usados no treinamento.',
-          C: 'Impossibilidade de processar grandes volumes de informações digitais.',
-          D: 'Substituição completa da legislação de proteção de dados pessoais.',
-          E: 'Garantia absoluta de transparência em sistemas de caixa-preta.'
-        },
-        correct: 'B',
-        explanation: 'Se os dados de treinamento refletem desigualdades sociais, algoritmos podem perpetuar discriminações caso não haja auditoria e ética.'
-      },
-      {
-        id: 25,
-        subject: 'Atualidades',
-        topic: 'Cidades Inteligentes',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'O conceito de "Cidades Inteligentes" (Smart Cities) envolve o uso de tecnologias digitais e dados para melhorar a gestão urbana, mas especialistas ressaltam que uma cidade só é efetivamente inteligente quando:',
-        options: {
-          A: 'Prioriza exclusivamente câmeras de vigilância sem investir em saneamento ou transporte.',
-          B: 'Alia inovação tecnológica à inclusão social, mobilidade sustentável e qualidade de vida para toda a população.',
-          C: 'Substitui todas as áreas verdes por centros de processamento de dados.',
-          D: 'Restringe o acesso aos serviços digitais apenas aos bairros de alta renda.',
-          E: 'Elimina a participação cidadã nas decisões do orçamento público.'
-        },
-        correct: 'B',
-        explanation: 'Tecnologia urbana precisa estar conectada à sustentabilidade ambiental e à redução das desigualdades socioespaciais.'
-      },
-      {
-        id: 26,
-        subject: 'Atualidades',
-        topic: 'Geopolítica Contemporânea',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A recente ampliação do grupo BRICS (com a entrada de novos membros a partir de 2024) reflete uma tendência geopolítica de:',
-        options: {
-          A: 'Subordinação total das economias emergentes ao padrão monetário único europeu.',
-          B: 'Busca por maior multipolaridade e fortalecimento da cooperação econômica e política entre países do Sul Global.',
-          C: 'Dissolução de todos os acordos comerciais entre Ásia e América do Sul.',
-          D: 'Isolamento diplomático completo de Brasil, Índia e China.',
-          E: 'Substituição da Organização das Nações Unidas por uma aliança militar.'
-        },
-        correct: 'B',
-        explanation: 'O BRICS ampliado busca ampliar o peso dos países emergentes na governança global e nas relações comerciais Sul-Sul.'
-      },
-      {
-        id: 27,
-        subject: 'Atualidades',
-        topic: 'Economia Circular',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'Diferentemente do modelo linear ("extrair, produzir, descartar"), a Economia Circular propõe:',
-        options: {
-          A: 'Aumentar a obsolescência programada dos aparelhos eletrônicos.',
-          B: 'Manter produtos, componentes e materiais em uso pelo maior tempo possível por meio de reuso, reparo e reciclagem.',
-          C: 'Proibir a logística reversa de embalagens e baterias.',
-          D: 'Expandir aterros sanitários como única solução para resíduos sólidos.',
-          E: 'Desvincular o design industrial do impacto ambiental.'
-        },
-        correct: 'B',
-        explanation: 'A economia circular repensa o ciclo produtivo desde a concepção para minimizar resíduos e regenerar recursos.'
-      },
-      {
-        id: 28,
-        subject: 'Português',
-        topic: 'Coesão Referencial',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'Leia: "Os estudantes visitaram o parque tecnológico. Lá, conheceram startups de biotecnologia." O termo destacado "Lá" estabelece coesão textual por retomar:',
-        options: {
-          A: 'Os estudantes.',
-          B: 'O parque tecnológico.',
-          C: 'As startups.',
-          D: 'A biotecnologia.',
-          E: 'A ação de conhecer.'
-        },
-        correct: 'B',
-        explanation: 'O advérbio de lugar "Lá" funciona como elemento anafórico, retomando o referente espacial "o parque tecnológico".'
-      },
-      {
-        id: 29,
-        subject: 'História',
-        topic: 'História da África e Cultura Afro-Brasileira',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'O Reino do Mali, que floresceu na África Ocidental entre os séculos XIII e XVI sob governantes como Mansa Musa, destacou-se por:',
-        options: {
-          A: 'Ser uma colônia europeia isolada do comércio transaariano.',
-          B: 'Controlar importantes rotas comerciais de ouro e sal e abrigar centros intelectuais como Tombuctu.',
-          C: 'Desconhecer a escrita e qualquer forma de organização urbana.',
-          D: 'Basear sua economia exclusivamente na pesca marítima no Oceano Índico.',
-          E: 'Ter sido destruído antes da expansão do Islã pelo Norte da África.'
-        },
-        correct: 'B',
-        explanation: 'O Império do Mali foi uma das maiores potências econômicas e culturais da África pré-colonial, famoso pelas bibliotecas e mesquitas de Tombuctu.'
-      },
-      {
-        id: 30,
-        subject: 'Geografia',
-        topic: 'Agropecuária e Tecnologia',
-        exam: 'Fatec · Provas Anteriores',
-        question: 'A chamada "Agricultura 4.0" no campo brasileiro caracteriza-se pela integração de sensores, drones, imagens de satélite e análise de dados com o objetivo de:',
-        options: {
-          A: 'Eliminar a necessidade de engenheiros agrônomos e técnicos agrícolas.',
-          B: 'Otimizar o uso de insumos (água, fertilizantes e defensivos), aumentar a produtividade e monitorar lavouras com precisão.',
-          C: 'Substituir todas as lavouras comerciais por agricultura de subsistência manual.',
-          D: 'Desconsiderar as condições climáticas e o mapeamento de solos.',
-          E: 'Aumentar o desperdício hídrico na irrigação.'
-        },
-        correct: 'B',
-        explanation: 'A agricultura de precisão utiliza IoT, geoprocessamento e big data para aplicar insumos na medida exata de cada talhão.'
-      }
-    ];
-
-    // Corrige a questão 2 para ter alternativa B impecável ("Houve muitos candidatos...")
-    DEFAULT_QUESTIONS[1] = {
-      id: 2,
-      subject: 'Português',
-      topic: 'Concordância Verbal',
-      exam: 'Fatec · Provas Anteriores',
-      question: 'Assinale a alternativa em que a concordância verbal está rigorosamente de acordo com a norma-padrão da língua portuguesa:',
-      options: {
-        A: 'Fazem dez anos que a unidade da Fatec foi inaugurada naquele município.',
-        B: 'Houve muitos candidatos inscritos para o curso de Análise e Desenvolvimento de Sistemas.',
-        C: 'Aluga-se salas comerciais próximas à estação do metrô.',
-        D: 'Existe ainda muitas dúvidas sobre o edital do vestibular.',
-        E: 'Devem haver soluções mais sustentáveis para o transporte urbano.'
-      },
-      correct: 'B',
-      explanation: 'O verbo "haver" no sentido de "existir" é impessoal e permanece na 3ª pessoa do singular ("Houve muitos candidatos"). Nas demais: Faz dez anos, Alugam-se salas, Existem dúvidas, Deve haver soluções.'
-    };
-
-    const ROADMAP_DATA = [
-      {
-        category: 'Português & Interpretação',
-        badge: 'Peso Alto na Fatec',
-        items: [
-          { id: 'rm-1', title: 'Interpretação de textos jornalísticos, charges e infográficos' },
-          { id: 'rm-2', title: 'Sintaxe do período composto: conjunções (concessivas, causais, consecutivas)' },
-          { id: 'rm-3', title: 'Concordância verbal e nominal (casos de verbos impessoais)' },
-          { id: 'rm-4', title: 'Regência verbal, crase e coesão referencial' }
-        ]
-      },
-      {
-        category: 'História do Brasil & Geral',
-        badge: 'Base Cronológica',
-        items: [
-          { id: 'rm-5', title: 'Brasil Colônia: economia açucareira, mineração e escravidão' },
-          { id: 'rm-6', title: 'Segundo Reinado, abolicionismo e Proclamação da República' },
-          { id: 'rm-7', title: 'Era Vargas, industrialização, CLT e Ditadura Militar (1964–1985)' },
-          { id: 'rm-8', title: 'Revoluções Industriais, Guerras Mundiais e Guerra Fria' }
-        ]
-      },
-      {
-        category: 'Geografia & Geopolítica',
-        badge: 'Atualidades & Espaço',
-        items: [
-          { id: 'rm-9', title: 'Urbanização brasileira, metropolização e problemas socioambientais' },
-          { id: 'rm-10', title: 'Matriz energética brasileira e transição para fontes renováveis' },
-          { id: 'rm-11', title: 'Climas, biomas brasileiros (Cerrado, Amazônia) e recursos hídricos' },
-          { id: 'rm-12', title: 'Globalização, blocos econômicos (Mercosul, BRICS) e geopolítica' }
-        ]
-      },
-      {
-        category: 'Filosofia, Sociologia & Redação',
-        badge: 'Pensamento Crítico',
-        items: [
-          { id: 'rm-13', title: 'Clássicos da Sociologia: Durkheim, Weber e Marx' },
-          { id: 'rm-14', title: 'Mundo do trabalho: Fordismo, Toyotismo e Indústria 4.0' },
-          { id: 'rm-15', title: 'Cidadania, Constituição de 1988 e ética na Inteligência Artificial' },
-          { id: 'rm-16', title: 'Treino de redação dissertativo-argumentativa estilo Fatec' }
-        ]
-      }
-    ];
-
-    // =========================================================================
-    // 2. ESTADO DA APLICAÇÃO E PERSISTÊNCIA (LOCALSTORAGE)
-    // =========================================================================
-    const STORAGE_KEYS = {
-      THEME: 'klickkwiz_theme',
-      QUESTIONS: 'klickkwiz_questions_v1',
-      USERS: 'klickKwiz_users',
-      SESSION: 'klickKwiz_session',
-      GUEST_STATS: 'klickkwiz_stats_guest_v1',
-      GUEST_ROADMAP: 'klickkwiz_roadmap_guest_v1',
-      ADMIN_UNLOCKED: 'klickkwiz_admin_unlocked'
-    };
-
-    const NAV_ITEMS = [
-      { id: 'inicio', label: 'Início' },
-      { id: 'treinar', label: 'Treinar' },
-      { id: 'simulado', label: 'Simulado' },
-      { id: 'roteiro', label: 'Roteiro' },
-      { id: 'desempenho', label: 'Desempenho' },
-      { id: 'sobre', label: 'Sobre' },
-      { id: 'contato', label: 'Contato' },
-      { id: 'admin', label: 'Admin' }
-    ];
-
-    let currentTab = 'inicio';
-    let questionsBank = [];
-    let currentUser = null; // null = Visitante | { id, name, email, course, password }
-    let isAdminUnlocked = false;
-    let userStats = {
-      totalAnswered: 0,
-      totalHits: 0,
-      bySubject: {}, // { 'Português': { answered: 0, hits: 0 } }
-      wrongQuestionIds: [], // IDs de questões erradas ainda não acertadas na revisão
-      history: [] // [{ date, mode, detail, scoreText }]
-    };
-    let roadmapChecked = {};
-
-    // Estado do Mini Quiz
-    let miniQuizState = {
-      index: 0,
-      selectedOption: null,
-      answeredCurrent: false,
-      hits: 0,
-      finished: false
-    };
-
-    // Estado da Aba Treinar
-    let trainState = {
-      filteredQuestions: [],
-      currentIndex: 0,
-      onlyErrors: false,
-      correctionMode: 'imediata', // 'imediata' | 'final'
-      answers: {}, // { [questionId]: 'A' }
-      checked: {}, // { [questionId]: true }
-      batchFinished: false,
-      sessionHits: 0,
-      sessionMisses: 0
-    };
-
-    // Estado da Aba Simulado
-    let simuladoState = {
-      active: false,
-      paused: false,
-      questions: [],
-      currentIndex: 0,
-      answers: {}, // { [index]: 'A' }
-      flagged: {}, // { [index]: true }
-      totalSeconds: 18000,
-      remainingSeconds: 18000,
-      timerInterval: null
-    };
-
-    // =========================================================================
-    // 3. INICIALIZAÇÃO E GERENCIAMENTO DE USUÁRIOS / SESSÃO
-    // =========================================================================
-    function initApp() {
-      loadTheme();
-      loadQuestionsBank();
-      ensureDemoAccountExists();
-      loadSession();
-      loadUserScopedData();
-      isAdminUnlocked = sessionStorage.getItem(STORAGE_KEYS.ADMIN_UNLOCKED) === 'true';
-
-      renderNavigation();
-      updateAuthUI();
-      updateAdminLockUI();
-      updateBankCounters();
-      initMiniQuiz();
-      populateSubjectFilter();
-      applyTrainFilters();
-      renderRoadmap();
-      renderStatsDashboard();
-      renderAdminList();
-
-      // Fecha dropdown do usuário ao clicar fora
-      document.addEventListener('click', (e) => {
-        const box = document.getElementById('header-user-box');
-        const dropdown = document.getElementById('user-dropdown');
-        if (box && dropdown && !box.contains(e.target)) {
-          dropdown.classList.add('hidden');
+        {
+          id: "q24",
+          subject: "Matemática e Raciocínio Lógico",
+          exam: "Vestibular 2026/1",
+          difficulty: "Média",
+          context: "Um reservatório cilíndrico de água de uma unidade universitária tem raio da base igual a 2 metros e altura igual a 3 metros. (Considere π ≈ 3,14).",
+          prompt: "A capacidade máxima desse reservatório, em litros, é aproximadamente igual a:",
+          options: [
+            "18.840 litros",
+            "25.120 litros",
+            "37.680 litros",
+            "42.500 litros",
+            "50.240 litros"
+          ],
+          answer: 2,
+          explanation: "Volume do cilindro: V = π · r² · h = 3,14 · 2² · 3 = 3,14 · 12 = 37,68 m³. Como 1 m³ = 1.000 litros, temos 37.680 litros."
         }
-      });
-    }
+      ];
 
-    function getUsersList() {
-      try {
-        const list = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS));
-        return Array.isArray(list) ? list : [];
-      } catch (e) {
-        return [];
+      /* ---------------------------------------------------------
+         2. ROTEIRO DE 8 SEMANAS VESTIBULARES
+      --------------------------------------------------------- */
+      const ROADMAP_WEEKS = [
+        {
+          week: 1,
+          title: "Fundamentos & Diagnóstico",
+          focus: "Matemática Básica + Interpretação Textual",
+          tasks: [
+            { id: "w1t1", text: "Revisar Porcentagem, Razão, Proporção e Regra de Três (alta incidência nos Vestibulares)." },
+            { id: "w1t2", text: "Resolver 15 questões de interpretação de texto e gêneros jornalísticos." }
+          ]
+        },
+        {
+          week: 2,
+          title: "Funções & Brasil Contemporâneo",
+          focus: "Funções 1º/2º Grau + Era Vargas à Redemocratização",
+          tasks: [
+            { id: "w2t1", text: "Praticar gráficos de Função Afim e Quadrática aplicados a custos e receitas." },
+            { id: "w2t2", text: "Estudar Era Vargas, Ditadura Militar e Constituição de 1988." }
+          ]
+        },
+        {
+          week: 3,
+          title: "Lógica, Conjuntos & Geopolítica",
+          focus: "Raciocínio Lógico + Globalização e Energia",
+          tasks: [
+            { id: "w3t1", text: "Dominar Tabelas-Verdade, Equivalências Lógicas e Diagramas de Venn." },
+            { id: "w3t2", text: "Revisar Transição Energética, Blocos Econômicos e Urbanização Brasileira." }
+          ]
+        },
+        {
+          week: 4,
+          title: "Ciências da Natureza Aplicadas",
+          focus: "Mecânica, Eletricidade & Meio Ambiente",
+          tasks: [
+            { id: "w4t1", text: "Resolver exercícios de Cinemática, Leis de Newton e Consumo Elétrico (kWh)." },
+            { id: "w4t2", text: "Revisar Ecologia (eutrofização, ciclos biogeoquímicos) e Química Ambiental." }
+          ]
+        },
+        {
+          week: 5,
+          title: "Inglês Instrumental & Gramática",
+          focus: "Leitura Técnica em Inglês + Norma Padrão",
+          tasks: [
+            { id: "w5t1", text: "Treinar cognatos, falsos cognatos e conectivos (however, although, therefore) em textos de TI." },
+            { id: "w5t2", text: "Revisar Crase, Concordância Verbal e Coesão Referencial para a Redação." }
+          ]
+        },
+        {
+          week: 6,
+          title: "Geometria & Combinatória",
+          focus: "Áreas, Volumes & Probabilidade",
+          tasks: [
+            { id: "w6t1", text: "Calcular áreas planas e volumes de prismas e cilindros em problemas contextualizados." },
+            { id: "w6t2", text: "Praticar Princípio Fundamental da Contagem e Probabilidade simples." }
+          ]
+        },
+        {
+          week: 7,
+          title: "Redação Dissertativa Vestibulares",
+          focus: "Estrutura Nota Máxima & Atualidades",
+          tasks: [
+            { id: "w7t1", text: "Escrever 2 redações dissertativo-argumentativas sobre tecnologia, trabalho e sustentabilidade." },
+            { id: "w7t2", text: "Refazer todas as questões marcadas no Caderno de Erros." }
+          ]
+        },
+        {
+          week: 8,
+          title: "Reta Final & Simulados Reais",
+          focus: "Gestão de Tempo & Revisão Estratégica",
+          tasks: [
+            { id: "w8t1", text: "Realizar 2 Simulados Cronometrados completos controlando o tempo por questão." },
+            { id: "w8t2", text: "Revisar fórmulas essenciais e descansar bem na véspera da prova." }
+          ]
+        }
+      ];
+
+      /* ---------------------------------------------------------
+         3. ESTADO GLOBAL E PERSISTÊNCIA (LOCALSTORAGE)
+      --------------------------------------------------------- */
+      const STORAGE_KEYS = {
+        QUESTIONS: "kk_vestibulares_questions_v2",
+        USER: "kk_vestibulares_user_v2",
+        PROGRESS: "kk_vestibulares_progress_v2"
+      };
+
+      const defaultProgress = {
+        answered: {},
+        favorites: [],
+        eliminated: {},
+        roadmapDone: [],
+        simHistory: [],
+        streak: 1,
+        lastActiveDate: new Date().toISOString().slice(0, 10),
+        dailySolvedCount: 0
+      };
+
+      let questions = [];
+      let currentUser = null;
+      let progress = JSON.parse(JSON.stringify(defaultProgress));
+      let miniQuizIndex = 0;
+      let miniQuizAnswers = {};
+      let trainFiltered = [];
+      let trainCurrentIndex = 0;
+      let simState = { active: false };
+
+      function escapeHTML(str) {
+        if (str == null) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
       }
-    }
 
-    function saveUsersList(list) {
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(list));
-    }
-
-    function ensureDemoAccountExists() {
-      const users = getUsersList();
-      const demoEmail = 'aluno@fatec.sp.gov.br';
-      if (!users.some(u => u.email.toLowerCase() === demoEmail)) {
-        users.push({
-          id: 'demo-fatec-user',
-          name: 'Aluno Demo Fatec',
-          email: demoEmail,
-          course: 'Análise e Desenvolvimento de Sistemas (ADS)',
-          password: '123'
-        });
-        saveUsersList(users);
+      function showToast(title, message, type = "info") {
+        const container = document.getElementById("toastContainer");
+        if (!container) return;
+        const borderColors = {
+          success: "border-l-emerald-500",
+          error: "border-l-red-500",
+          amber: "border-l-amber-500",
+          info: "border-l-blue-500"
+        };
+        const toast = document.createElement("div");
+        toast.className = `kk-card p-3.5 border-l-4 ${borderColors[type] || borderColors.info} pointer-events-auto shadow-xl transition-all duration-300`;
+        toast.innerHTML = `
+          <div class="font-extrabold text-xs">${escapeHTML(title)}</div>
+          <div class="text-xs opacity-80 mt-0.5">${escapeHTML(message)}</div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateY(8px)";
+          setTimeout(() => toast.remove(), 300);
+        }, 3200);
       }
-    }
 
-    function loadSession() {
-      try {
-        const sessionEmail = localStorage.getItem(STORAGE_KEYS.SESSION);
-        if (!sessionEmail) {
+      function loadState() {
+        try {
+          const savedCustom = JSON.parse(localStorage.getItem(STORAGE_KEYS.QUESTIONS) || "[]");
+          questions = [...DEFAULT_QUESTIONS, ...savedCustom];
+        } catch (e) {
+          questions = [...DEFAULT_QUESTIONS];
+        }
+
+        try {
+          currentUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER) || "null");
+        } catch (e) {
           currentUser = null;
+        }
+
+        try {
+          const savedProg = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROGRESS) || "null");
+          if (savedProg) {
+            progress = { ...JSON.parse(JSON.stringify(defaultProgress)), ...savedProg };
+          }
+        } catch (e) {
+          progress = JSON.parse(JSON.stringify(defaultProgress));
+        }
+
+        const today = new Date().toISOString().slice(0, 10);
+        if (progress.lastActiveDate !== today) {
+          const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          progress.streak = progress.lastActiveDate === yesterday ? (progress.streak || 1) + 1 : 1;
+          progress.lastActiveDate = today;
+          progress.dailySolvedCount = 0;
+          saveProgress();
+        }
+      }
+
+      function saveProgress() {
+        localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(progress));
+        updateGlobalHUD();
+      }
+
+      function saveCustomQuestions() {
+        const customOnly = questions.filter((q) => q.isCustom);
+        localStorage.setItem(STORAGE_KEYS.QUESTIONS, JSON.stringify(customOnly));
+        populateFilterOptions();
+      }
+
+      function navigateTo(viewName) {
+        document.querySelectorAll(".view-section").forEach((sec) => sec.classList.remove("active"));
+        const target = document.getElementById(`view-${viewName}`);
+        if (target) target.classList.add("active");
+
+        document.querySelectorAll(".nav-link").forEach((btn) => {
+          btn.classList.toggle("active", btn.getAttribute("data-nav") === viewName);
+        });
+
+        const drawer = document.getElementById("mobileMenuDrawer");
+        if (drawer) drawer.classList.add("hidden");
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        if (viewName === "treinar") {
+          populateFilterOptions();
+          applyTrainFilters(false);
+        } else if (viewName === "desempenho") {
+          renderAnalytics();
+        } else if (viewName === "roteiro") {
+          renderRoadmap();
+        } else if (viewName === "admin") {
+          renderAdminList();
+        } else if (viewName === "perfil") {
+          renderProfileView();
+        } else if (viewName === "simulado") {
+          populateSimSubjects();
+        }
+      }
+
+      /* ---------------------------------------------------------
+         5. ATUALIZAÇÃO DE HUD GLOBAL E AUTENTICAÇÃO
+      --------------------------------------------------------- */
+      function getInitials(name) {
+        if (!name) return "KV";
+        const parts = name.trim().split(/\s+/);
+        return ((parts[0]?.[0] || "") + (parts[1]?.[0] || parts[0]?.[1] || "")).toUpperCase();
+      }
+
+      function updateGlobalHUD() {
+        const answeredArr = Object.values(progress.answered);
+        const totalSolved = answeredArr.length;
+        const totalCorrect = answeredArr.filter((a) => a.correct).length;
+        const accuracy = totalSolved > 0 ? Math.round((totalCorrect / totalSolved) * 100) : 0;
+
+        document.getElementById("topStreak").textContent = progress.streak || 1;
+        document.getElementById("heroTotalQuestions").textContent = questions.length;
+        document.getElementById("heroUserSolved").textContent = totalSolved;
+        document.getElementById("heroUserAccuracy").textContent = `${accuracy}%`;
+        document.getElementById("simAllCountLabel").textContent = `${questions.length} Questões`;
+        document.getElementById("adminTotalCount").textContent = questions.length;
+
+        const wrongCount = answeredArr.filter((a) => !a.correct).length;
+        document.getElementById("wrongCountBadge").textContent = wrongCount;
+
+        const guestBox = document.getElementById("guestControls");
+        const userBox = document.getElementById("userControls");
+        const homeBanner = document.getElementById("homeUserBanner");
+
+        if (currentUser) {
+          guestBox.classList.add("hidden");
+          userBox.classList.remove("hidden");
+          userBox.classList.add("flex");
+
+          const initials = getInitials(currentUser.name);
+          document.getElementById("topAvatar").textContent = initials;
+          document.getElementById("topUserName").textContent = currentUser.name.split(" ")[0];
+
+          homeBanner.classList.remove("hidden");
+          document.getElementById("bannerAvatar").textContent = initials;
+          document.getElementById("bannerTitle").textContent = `Olá, ${currentUser.name}! Foco em ${currentUser.course}`;
+          const goal = currentUser.dailyGoal || 10;
+          document.getElementById("bannerSubtitle").textContent = `Meta de hoje: ${progress.dailySolvedCount}/${goal} questões concluídas · ${totalCorrect} acertos totais.`;
+        } else {
+          guestBox.classList.remove("hidden");
+          userBox.classList.add("hidden");
+          userBox.classList.remove("flex");
+          homeBanner.classList.add("hidden");
+        }
+      }
+
+      /* ---------------------------------------------------------
+         6. MINI QUIZ DE BOAS-VINDAS (HOME)
+      --------------------------------------------------------- */
+      function renderMiniQuiz() {
+        const container = document.getElementById("miniQuizContainer");
+        const badge = document.getElementById("miniQuizBadge");
+        const miniQuestions = questions.slice(0, 4);
+        const letters = ["A", "B", "C", "D", "E"];
+
+        if (miniQuizIndex >= miniQuestions.length) {
+          const hits = miniQuestions.filter((q, idx) => miniQuizAnswers[idx] === q.answer).length;
+          badge.textContent = "Concluído!";
+          container.innerHTML = `
+            <div class="text-center py-6 space-y-4">
+              <div class="text-4xl">${hits >= 3 ? "🏆" : "💡"}</div>
+              <h3 class="text-2xl font-extrabold">Você acertou ${hits} de ${miniQuestions.length} questões!</h3>
+              <p class="text-sm opacity-75 max-w-md mx-auto">
+                ${hits >= 3 ? "Excelente base! Você já está no ritmo dos Vestibulares. Avance para o Banco Completo ou Simulado." : "Ótimo começo! Explore o Banco de Questões comentado para dominar os padrões da banca."}
+              </p>
+              <div class="flex flex-wrap justify-center gap-3 pt-2">
+                <button type="button" data-nav="treinar" class="kk-btn-primary px-5 py-2.5 text-sm">Ir para Banco Completo (${questions.length} questões)</button>
+                <button type="button" id="btnMiniRestartEnd" class="kk-btn-outline px-4 py-2.5 text-sm">Refazer Mini Quiz</button>
+              </div>
+            </div>
+          `;
+          document.getElementById("btnMiniRestartEnd").addEventListener("click", () => {
+            miniQuizIndex = 0;
+            miniQuizAnswers = {};
+            renderMiniQuiz();
+          });
           return;
         }
-        const users = getUsersList();
-        currentUser = users.find(u => u.email.toLowerCase() === sessionEmail.toLowerCase()) || null;
-        if (!currentUser) {
-          localStorage.removeItem(STORAGE_KEYS.SESSION);
-        }
-      } catch (e) {
-        currentUser = null;
-      }
-    }
 
-    function getScopedStorageKeys() {
-      if (currentUser && currentUser.email) {
-        const safeKey = currentUser.email.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        return {
-          stats: `klickKwiz_stats_${safeKey}`,
-          roadmap: `klickKwiz_roadmap_${safeKey}`
-        };
-      }
-      return {
-        stats: STORAGE_KEYS.GUEST_STATS,
-        roadmap: STORAGE_KEYS.GUEST_ROADMAP
-      };
-    }
-
-    function loadUserScopedData() {
-      const keys = getScopedStorageKeys();
-      // Carrega estatísticas do usuário ativo (ou visitante)
-      try {
-        const saved = JSON.parse(localStorage.getItem(keys.stats));
-        if (saved && typeof saved === 'object') {
-          userStats = {
-            totalAnswered: saved.totalAnswered || 0,
-            totalHits: saved.totalHits || 0,
-            bySubject: saved.bySubject || {},
-            wrongQuestionIds: Array.isArray(saved.wrongQuestionIds) ? saved.wrongQuestionIds : [],
-            history: Array.isArray(saved.history) ? saved.history : []
-          };
-        } else {
-          userStats = { totalAnswered: 0, totalHits: 0, bySubject: {}, wrongQuestionIds: [], history: [] };
-        }
-      } catch (e) {
-        userStats = { totalAnswered: 0, totalHits: 0, bySubject: {}, wrongQuestionIds: [], history: [] };
-      }
-
-      // Carrega roteiro do usuário ativo (ou visitante)
-      try {
-        roadmapChecked = JSON.parse(localStorage.getItem(keys.roadmap)) || {};
-      } catch (e) {
-        roadmapChecked = {};
-      }
-
-      updateErrorBadge();
-    }
-
-    function getUserInitials(name) {
-      if (!name) return 'AL';
-      const parts = name.trim().split(/\s+/);
-      if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-
-    function updateAuthUI() {
-      const loginBtn = document.getElementById('header-login-btn');
-      const userBox = document.getElementById('header-user-box');
-      const welcomeBanner = document.getElementById('welcome-user-banner');
-      const desTitle = document.getElementById('desempenho-title');
-      const desBadge = document.getElementById('desempenho-profile-badge');
-      const desSub = document.getElementById('desempenho-subtitle');
-      const desCta = document.getElementById('desempenho-login-cta');
-
-      if (currentUser) {
-        const initials = getUserInitials(currentUser.name);
-        const firstName = currentUser.name.trim().split(/\s+/)[0];
-
-        loginBtn.classList.add('hidden');
-        userBox.classList.remove('hidden');
-
-        document.getElementById('header-user-avatar').textContent = initials;
-        document.getElementById('header-user-name').textContent = firstName;
-        document.getElementById('dropdown-user-fullname').textContent = currentUser.name;
-        document.getElementById('dropdown-user-email').textContent = currentUser.email;
-        document.getElementById('dropdown-user-course').textContent = currentUser.course || 'Vestibular Fatec';
-
-        // Banner personalizado na Home
-        welcomeBanner.classList.remove('hidden');
-        document.getElementById('welcome-user-avatar').textContent = initials;
-        document.getElementById('welcome-user-greeting').textContent = `Olá, ${firstName}! Bom treino hoje.`;
-        document.getElementById('welcome-user-sub').textContent = `Curso pretendido: ${currentUser.course || 'Fatec'} · ${currentUser.email}`;
-
-        // Personalização na aba Desempenho
-        desTitle.textContent = `Desempenho de ${firstName}`;
-        desBadge.textContent = currentUser.course || 'Aluno Cadastrado';
-        desSub.textContent = `Acompanhamento individual vinculado à conta ${currentUser.email}.`;
-        desCta.classList.add('hidden');
-      } else {
-        loginBtn.classList.remove('hidden');
-        userBox.classList.add('hidden');
-        welcomeBanner.classList.add('hidden');
-
-        desTitle.textContent = 'Seu Desempenho';
-        desBadge.textContent = 'Perfil Visitante (Local)';
-        desSub.textContent = 'Estatísticas salvas no modo visitante. Crie uma conta para organizar seu perfil.';
-        desCta.classList.remove('hidden');
-      }
-    }
-
-    function openAuthModal(tab = 'login') {
-      const modal = document.getElementById('auth-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      switchAuthTab(tab);
-    }
-
-    function closeAuthModal() {
-      const modal = document.getElementById('auth-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function switchAuthTab(tab) {
-      const loginTab = document.getElementById('auth-tab-login');
-      const regTab = document.getElementById('auth-tab-register');
-      const loginForm = document.getElementById('auth-login-form');
-      const regForm = document.getElementById('auth-register-form');
-
-      if (tab === 'login') {
-        loginTab.className = 'py-2 rounded-lg text-xs sm:text-sm font-bold bg-white dark:bg-slate-900 text-fatec-700 dark:text-fatec-300 shadow-sm transition';
-        regTab.className = 'py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition';
-        loginForm.classList.remove('hidden');
-        regForm.classList.add('hidden');
-      } else {
-        regTab.className = 'py-2 rounded-lg text-xs sm:text-sm font-bold bg-white dark:bg-slate-900 text-fatec-700 dark:text-fatec-300 shadow-sm transition';
-        loginTab.className = 'py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition';
-        regForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-      }
-    }
-
-    function completeUserLogin(user, welcomeMsg) {
-      currentUser = user;
-      localStorage.setItem(STORAGE_KEYS.SESSION, user.email);
-      loadUserScopedData();
-      updateAuthUI();
-      renderRoadmap();
-      renderStatsDashboard();
-      if (currentTab === 'treinar') applyTrainFilters();
-      closeAuthModal();
-      showToast(welcomeMsg, 'success');
-    }
-
-    function handleLoginSubmit(e) {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value.trim().toLowerCase();
-      const password = document.getElementById('login-password').value;
-
-      const users = getUsersList();
-      const found = users.find(u => u.email.toLowerCase() === email && u.password === password);
-
-      if (!found) {
-        showToast('E-mail ou senha incorretos. Tente novamente ou use a Conta Demo.', 'error');
-        return;
-      }
-
-      document.getElementById('auth-login-form').reset();
-      completeUserLogin(found, `Bem-vindo(a) de volta, ${found.name.split(' ')[0]}!`);
-    }
-
-    function handleRegisterSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById('reg-name').value.trim();
-      const email = document.getElementById('reg-email').value.trim().toLowerCase();
-      const course = document.getElementById('reg-course').value;
-      const password = document.getElementById('reg-password').value;
-
-      if (!name || !email || password.length < 4) {
-        showToast('Preencha todos os campos corretamente.', 'warning');
-        return;
-      }
-
-      const users = getUsersList();
-      if (users.some(u => u.email.toLowerCase() === email)) {
-        showToast('Este e-mail já está cadastrado. Faça login na aba Entrar.', 'warning');
-        switchAuthTab('login');
-        document.getElementById('login-email').value = email;
-        return;
-      }
-
-      const newUser = {
-        id: 'user-' + Date.now(),
-        name,
-        email,
-        course,
-        password
-      };
-
-      users.push(newUser);
-      saveUsersList(users);
-      document.getElementById('auth-register-form').reset();
-      completeUserLogin(newUser, `Conta criada com sucesso! Bons estudos, ${name.split(' ')[0]}!`);
-    }
-
-    function loginDemoAccount() {
-      ensureDemoAccountExists();
-      const users = getUsersList();
-      const demo = users.find(u => u.email.toLowerCase() === 'aluno@fatec.sp.gov.br');
-      if (demo) {
-        completeUserLogin(demo, 'Conectado na Conta Demo (aluno@fatec.sp.gov.br)!');
-      }
-    }
-
-    function toggleUserDropdown() {
-      const dropdown = document.getElementById('user-dropdown');
-      dropdown.classList.toggle('hidden');
-    }
-
-    function logoutUser() {
-      document.getElementById('user-dropdown').classList.add('hidden');
-      currentUser = null;
-      localStorage.removeItem(STORAGE_KEYS.SESSION);
-      loadUserScopedData();
-      updateAuthUI();
-      renderRoadmap();
-      renderStatsDashboard();
-      if (currentTab === 'treinar') applyTrainFilters();
-      showToast('Você saiu da conta. Agora está no modo visitante.', 'info');
-    }
-
-    // Controle de Bloqueio / Desbloqueio da aba Admin
-    function updateAdminLockUI() {
-      const lockScreen = document.getElementById('admin-lock-screen');
-      const unlockedContent = document.getElementById('admin-unlocked-content');
-      if (!lockScreen || !unlockedContent) return;
-
-      if (isAdminUnlocked) {
-        lockScreen.classList.add('hidden');
-        unlockedContent.classList.remove('hidden');
-      } else {
-        lockScreen.classList.remove('hidden');
-        unlockedContent.classList.add('hidden');
-      }
-    }
-
-    function handleAdminUnlock(e) {
-      e.preventDefault();
-      const pass = document.getElementById('admin-pass-input').value.trim();
-      if (pass === 'admin123') {
-        isAdminUnlocked = true;
-        sessionStorage.setItem(STORAGE_KEYS.ADMIN_UNLOCKED, 'true');
-        document.getElementById('admin-pass-input').value = '';
-        updateAdminLockUI();
-        renderAdminList();
-        showToast('Painel Administrativo desbloqueado!', 'success');
-      } else {
-        showToast('Senha incorreta. Dica: use admin123 ou o acesso rápido.', 'error');
-      }
-    }
-
-    function quickUnlockAdmin() {
-      isAdminUnlocked = true;
-      sessionStorage.setItem(STORAGE_KEYS.ADMIN_UNLOCKED, 'true');
-      updateAdminLockUI();
-      renderAdminList();
-      showToast('Acesso rápido de Professor ativado!', 'success');
-    }
-
-    function lockAdminPanel() {
-      isAdminUnlocked = false;
-      sessionStorage.removeItem(STORAGE_KEYS.ADMIN_UNLOCKED);
-      updateAdminLockUI();
-      showToast('Painel Admin bloqueado.', 'info');
-    }
-
-    function loadTheme() {
-      const saved = localStorage.getItem(STORAGE_KEYS.THEME);
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const isDark = saved ? saved === 'dark' : prefersDark;
-      applyTheme(isDark);
-    }
-
-    function applyTheme(isDark) {
-      const html = document.documentElement;
-      const icon = document.getElementById('theme-icon');
-      const label = document.getElementById('theme-label');
-      if (isDark) {
-        html.classList.add('dark');
-        icon.textContent = '☀️';
-        label.textContent = 'Claro';
-      } else {
-        html.classList.remove('dark');
-        icon.textContent = '🌙';
-        label.textContent = 'Escuro';
-      }
-      localStorage.setItem(STORAGE_KEYS.THEME, isDark ? 'dark' : 'light');
-    }
-
-    function toggleTheme() {
-      const isDark = document.documentElement.classList.contains('dark');
-      applyTheme(!isDark);
-    }
-
-    function loadQuestionsBank() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEYS.QUESTIONS));
-        if (Array.isArray(saved) && saved.length > 0) {
-          questionsBank = saved;
-        } else {
-          questionsBank = [...DEFAULT_QUESTIONS];
-          saveQuestionsBank();
-        }
-      } catch (e) {
-        questionsBank = [...DEFAULT_QUESTIONS];
-        saveQuestionsBank();
-      }
-    }
-
-    function saveQuestionsBank() {
-      localStorage.setItem(STORAGE_KEYS.QUESTIONS, JSON.stringify(questionsBank));
-      updateBankCounters();
-    }
-
-    function updateBankCounters() {
-      const count = questionsBank.length;
-      const heroCount = document.getElementById('hero-bank-count');
-      if (heroCount) {
-        heroCount.textContent = `${count} questões de Humanas no banco · gabarito conferido`;
-      }
-      const adminCount = document.getElementById('admin-total-count');
-      if (adminCount) {
-        adminCount.textContent = count;
-      }
-    }
-
-    function loadStats() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEYS.STATS));
-        if (saved && typeof saved === 'object') {
-          userStats = {
-            totalAnswered: saved.totalAnswered || 0,
-            totalHits: saved.totalHits || 0,
-            bySubject: saved.bySubject || {},
-            wrongQuestionIds: Array.isArray(saved.wrongQuestionIds) ? saved.wrongQuestionIds : [],
-            history: Array.isArray(saved.history) ? saved.history : []
-          };
-        }
-      } catch (e) {
-        console.error('Erro ao ler estatísticas:', e);
-      }
-      updateErrorBadge();
-    }
-
-    function saveStats() {
-      const keys = getScopedStorageKeys();
-      localStorage.setItem(keys.stats, JSON.stringify(userStats));
-      updateErrorBadge();
-    }
-
-    function updateErrorBadge() {
-      const badge = document.getElementById('error-count-badge');
-      if (badge) badge.textContent = userStats.wrongQuestionIds.length;
-    }
-
-    function recordAnswerAttempt(questionObj, isCorrect) {
-      userStats.totalAnswered += 1;
-      if (isCorrect) userStats.totalHits += 1;
-
-      const subj = questionObj.subject || 'Geral';
-      if (!userStats.bySubject[subj]) {
-        userStats.bySubject[subj] = { answered: 0, hits: 0 };
-      }
-      userStats.bySubject[subj].answered += 1;
-      if (isCorrect) userStats.bySubject[subj].hits += 1;
-
-      // Atualiza pool de revisão de erros (apenas para questões numéricas do banco principal)
-      if (typeof questionObj.id === 'number') {
-        const idx = userStats.wrongQuestionIds.indexOf(questionObj.id);
-        if (!isCorrect && idx === -1) {
-          userStats.wrongQuestionIds.push(questionObj.id);
-        } else if (isCorrect && idx !== -1) {
-          userStats.wrongQuestionIds.splice(idx, 1);
-        }
-      }
-
-      saveStats();
-    }
-
-    function addHistoryEntry(mode, detail, scoreText) {
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' +
-                      now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      userStats.history.unshift({ date: dateStr, mode, detail, scoreText });
-      if (userStats.history.length > 25) userStats.history.pop();
-      saveStats();
-    }
-
-    // =========================================================================
-    // 4. NAVEGAÇÃO ENTRE ABAS E COMPONENTES DE UI (TOAST / MODAL)
-    // =========================================================================
-    function renderNavigation() {
-      const desktopNav = document.getElementById('desktop-nav');
-      const mobileNav = document.getElementById('mobile-nav');
-
-      desktopNav.innerHTML = NAV_ITEMS.map(item => {
-        const active = item.id === currentTab;
-        return `
-          <button onclick="navigateTo('${item.id}')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
-            active
-              ? 'bg-white dark:bg-slate-900 text-fatec-700 dark:text-fatec-300 shadow-sm'
-              : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-          }">
-            ${item.label}
-          </button>
-        `;
-      }).join('');
-
-      mobileNav.innerHTML = NAV_ITEMS.map(item => {
-        const active = item.id === currentTab;
-        return `
-          <button onclick="navigateTo('${item.id}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-            active
-              ? 'bg-fatec-600 text-white shadow-sm'
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-          }">
-            ${item.label}
-          </button>
-        `;
-      }).join('');
-    }
-
-    function navigateTo(tabId) {
-      currentTab = tabId;
-      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
-      const target = document.getElementById(`tab-${tabId}`);
-      if (target) target.classList.remove('hidden');
-
-      renderNavigation();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      if (tabId === 'desempenho') renderStatsDashboard();
-      if (tabId === 'treinar') applyTrainFilters();
-      if (tabId === 'admin') renderAdminList();
-    }
-
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toast-container');
-      const colors = {
-        info: 'bg-slate-900 text-white border-slate-700',
-        success: 'bg-emerald-600 text-white border-emerald-500',
-        warning: 'bg-amber-600 text-white border-amber-500',
-        error: 'bg-rose-600 text-white border-rose-500'
-      };
-      const el = document.createElement('div');
-      el.className = `pointer-events-auto px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold shadow-lg border animate-fade-in ${colors[type] || colors.info}`;
-      el.textContent = message;
-      container.appendChild(el);
-      setTimeout(() => {
-        el.style.opacity = '0';
-        el.style.transition = 'opacity 0.25s ease';
-        setTimeout(() => el.remove(), 260);
-      }, 3000);
-    }
-
-    function showConfirm(title, message, onConfirm) {
-      const modal = document.getElementById('confirm-modal');
-      document.getElementById('confirm-title').textContent = title;
-      document.getElementById('confirm-message').textContent = message;
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-
-      const close = () => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      };
-
-      document.getElementById('confirm-cancel').onclick = close;
-      document.getElementById('confirm-ok').onclick = () => {
-        close();
-        onConfirm();
-      };
-    }
-
-    // =========================================================================
-    // 5. MINI QUIZ DE BOAS-VINDAS (NA ABA INÍCIO)
-    // =========================================================================
-    function initMiniQuiz() {
-      renderMiniQuizQuestion();
-    }
-
-    function renderMiniQuizQuestion() {
-      const bodyEl = document.getElementById('mini-quiz-body');
-      const resultEl = document.getElementById('mini-quiz-result');
-      const statusBadge = document.getElementById('mini-quiz-status');
-      const counterBadge = document.getElementById('mini-quiz-counter');
-
-      if (miniQuizState.finished) {
-        bodyEl.classList.add('hidden');
-        resultEl.classList.remove('hidden');
-        statusBadge.textContent = 'Concluído';
-        statusBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300';
-        counterBadge.textContent = `4 de 4 concluídas`;
-
-        document.getElementById('mini-quiz-score-title').textContent =
-          `Você acertou ${miniQuizState.hits} de ${MINI_QUIZ_QUESTIONS.length}!`;
-
-        let desc = 'Bom começo! Explore o banco completo para consolidar todos os temas de Humanas.';
-        if (miniQuizState.hits === 4) {
-          desc = 'Desempenho impecável! Você já está no ritmo das provas da Fatec.';
-        } else if (miniQuizState.hits <= 1) {
-          desc = 'Sem problemas! Use a aba Roteiro e o Modo Revisão para fortalecer sua base.';
-        }
-        document.getElementById('mini-quiz-score-desc').textContent = desc;
-        return;
-      }
-
-      bodyEl.classList.remove('hidden');
-      resultEl.classList.add('hidden');
-
-      const q = MINI_QUIZ_QUESTIONS[miniQuizState.index];
-      statusBadge.textContent = 'Em andamento';
-      statusBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300';
-      counterBadge.textContent = `Pergunta ${miniQuizState.index + 1} de ${MINI_QUIZ_QUESTIONS.length} · ${q.topic}`;
-
-      document.getElementById('mini-quiz-question').textContent = q.question;
-
-      const optionsContainer = document.getElementById('mini-quiz-options');
-      optionsContainer.innerHTML = Object.entries(q.options).map(([letter, text]) => {
-        const isSelected = miniQuizState.selectedOption === letter;
-        const isAnswered = miniQuizState.answeredCurrent;
-        const isCorrect = q.correct === letter;
-
-        let cardClass = 'border-slate-200 dark:border-slate-700 hover:border-fatec-400 bg-slate-50/70 dark:bg-slate-800/50';
-        let badgeClass = 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600';
-
-        if (!isAnswered && isSelected) {
-          cardClass = 'border-fatec-600 bg-fatec-50 dark:bg-fatec-900/30 ring-2 ring-fatec-500/30';
-          badgeClass = 'bg-fatec-600 text-white border-fatec-600';
-        } else if (isAnswered) {
-          if (isCorrect) {
-            cardClass = 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/25';
-            badgeClass = 'bg-emerald-600 text-white border-emerald-600';
-          } else if (isSelected && !isCorrect) {
-            cardClass = 'border-rose-500 bg-rose-50 dark:bg-rose-900/25';
-            badgeClass = 'bg-rose-600 text-white border-rose-600';
-          } else {
-            cardClass = 'border-slate-200 dark:border-slate-800 opacity-60';
-          }
-        }
-
-        return `
-          <button type="button" onclick="selectMiniQuizOption('${letter}')" ${isAnswered ? 'disabled' : ''}
-            class="w-full text-left p-3.5 sm:p-4 rounded-2xl border transition flex items-start gap-3.5 ${cardClass}">
-            <span class="w-7 h-7 rounded-lg text-xs font-extrabold flex items-center justify-center shrink-0 mt-0.5 ${badgeClass}">
-              ${letter}
-            </span>
-            <span class="text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-snug">${text}</span>
-          </button>
-        `;
-      }).join('');
-
-      const feedbackEl = document.getElementById('mini-quiz-feedback');
-      const hintEl = document.getElementById('mini-quiz-hint');
-      const nextBtn = document.getElementById('mini-quiz-next');
-
-      if (!miniQuizState.answeredCurrent) {
-        feedbackEl.classList.add('hidden');
-        hintEl.textContent = miniQuizState.selectedOption
-          ? `Alternativa ${miniQuizState.selectedOption} selecionada. Clique em Próxima para confirmar.`
-          : 'Escolha uma alternativa.';
-        nextBtn.disabled = !miniQuizState.selectedOption;
-        nextBtn.textContent = 'Próxima';
-      } else {
-        const isRight = miniQuizState.selectedOption === q.correct;
-        feedbackEl.classList.remove('hidden');
-        feedbackEl.className = isRight
-          ? 'rounded-2xl p-4 text-sm leading-relaxed border bg-emerald-50 dark:bg-emerald-900/25 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
-          : 'rounded-2xl p-4 text-sm leading-relaxed border bg-rose-50 dark:bg-rose-900/25 border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200';
-        feedbackEl.innerHTML = `<strong>${isRight ? '✓ Resposta correta!' : `✕ Resposta incorreta (Gabarito: ${q.correct}).`}</strong> ${q.explanation}`;
-        hintEl.textContent = miniQuizState.index < MINI_QUIZ_QUESTIONS.length - 1
-          ? 'Clique em Continuar para a próxima pergunta.'
-          : 'Clique em Ver resultado para finalizar.';
-        nextBtn.disabled = false;
-        nextBtn.textContent = miniQuizState.index < MINI_QUIZ_QUESTIONS.length - 1 ? 'Continuar →' : 'Ver resultado';
-      }
-    }
-
-    function selectMiniQuizOption(letter) {
-      if (miniQuizState.answeredCurrent) return;
-      miniQuizState.selectedOption = letter;
-      renderMiniQuizQuestion();
-    }
-
-    function handleMiniQuizNext() {
-      if (!miniQuizState.selectedOption) return;
-      const q = MINI_QUIZ_QUESTIONS[miniQuizState.index];
-
-      // Passo 1: valida e mostra feedback
-      if (!miniQuizState.answeredCurrent) {
-        miniQuizState.answeredCurrent = true;
-        const isCorrect = miniQuizState.selectedOption === q.correct;
-        if (isCorrect) miniQuizState.hits += 1;
-        recordAnswerAttempt(q, isCorrect);
-        renderMiniQuizQuestion();
-        return;
-      }
-
-      // Passo 2: avança para próxima ou conclui
-      if (miniQuizState.index < MINI_QUIZ_QUESTIONS.length - 1) {
-        miniQuizState.index += 1;
-        miniQuizState.selectedOption = null;
-        miniQuizState.answeredCurrent = false;
-        renderMiniQuizQuestion();
-      } else {
-        miniQuizState.finished = true;
-        addHistoryEntry('Mini Quiz', '4 questões iniciais', `${miniQuizState.hits}/4 acertos`);
-        renderMiniQuizQuestion();
-      }
-    }
-
-    function resetMiniQuiz() {
-      miniQuizState = {
-        index: 0,
-        selectedOption: null,
-        answeredCurrent: false,
-        hits: 0,
-        finished: false
-      };
-      renderMiniQuizQuestion();
-    }
-
-    // =========================================================================
-    // 6. ABA TREINAR & MODO REVISÃO DE ERROS
-    // =========================================================================
-    function populateSubjectFilter() {
-      const select = document.getElementById('filter-subject');
-      const subjects = [...new Set(questionsBank.map(q => q.subject))];
-      select.innerHTML = '<option value="TODAS">Todas as matérias</option>' +
-        subjects.map(s => `<option value="${s}">${s}</option>`).join('');
-    }
-
-    function startErrorReviewFromHome() {
-      navigateTo('treinar');
-      if (userStats.wrongQuestionIds.length === 0) {
-        showToast('Você ainda não tem questões erradas registradas. Faça um treino primeiro!', 'info');
-        return;
-      }
-      if (!trainState.onlyErrors) {
-        toggleErrorReviewMode();
-      }
-    }
-
-    function toggleErrorReviewMode() {
-      trainState.onlyErrors = !trainState.onlyErrors;
-      const btn = document.getElementById('btn-review-errors');
-      if (trainState.onlyErrors) {
-        btn.classList.add('bg-amber-500', 'text-white', 'border-amber-500');
-        btn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-amber-700', 'dark:text-amber-300');
-      } else {
-        btn.classList.remove('bg-amber-500', 'text-white', 'border-amber-500');
-        btn.classList.add('bg-white', 'dark:bg-slate-900', 'text-amber-700', 'dark:text-amber-300');
-      }
-      applyTrainFilters();
-    }
-
-    function disableErrorReviewMode() {
-      trainState.onlyErrors = false;
-      const btn = document.getElementById('btn-review-errors');
-      btn.classList.remove('bg-amber-500', 'text-white', 'border-amber-500');
-      btn.classList.add('bg-white', 'dark:bg-slate-900', 'text-amber-700', 'dark:text-amber-300');
-      applyTrainFilters();
-    }
-
-    function changeCorrectionMode() {
-      trainState.correctionMode = document.getElementById('filter-correction-mode').value;
-      resetTrainSession();
-    }
-
-    function applyTrainFilters() {
-      const subj = document.getElementById('filter-subject').value;
-      const order = document.getElementById('filter-order').value;
-
-      let list = [...questionsBank];
-      if (subj !== 'TODAS') {
-        list = list.filter(q => q.subject === subj);
-      }
-      if (trainState.onlyErrors) {
-        list = list.filter(q => userStats.wrongQuestionIds.includes(q.id));
-      }
-      if (order === 'aleatoria') {
-        list.sort(() => Math.random() - 0.5);
-      }
-
-      trainState.filteredQuestions = list;
-      trainState.currentIndex = 0;
-      trainState.batchFinished = false;
-      document.getElementById('train-batch-summary').classList.add('hidden');
-      renderTrainQuestion();
-    }
-
-    function resetTrainSession() {
-      trainState.answers = {};
-      trainState.checked = {};
-      trainState.sessionHits = 0;
-      trainState.sessionMisses = 0;
-      trainState.batchFinished = false;
-      document.getElementById('train-batch-summary').classList.add('hidden');
-      applyTrainFilters();
-    }
-
-    function renderTrainQuestion() {
-      const total = trainState.filteredQuestions.length;
-      document.getElementById('train-total-filtered').textContent = total;
-      document.getElementById('train-session-hits').textContent = trainState.sessionHits;
-      document.getElementById('train-session-misses').textContent = trainState.sessionMisses;
-
-      const card = document.getElementById('train-card');
-      const emptyState = document.getElementById('train-empty-state');
-
-      if (total === 0) {
-        card.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-        document.getElementById('train-current-num').textContent = '0';
-        return;
-      }
-
-      card.classList.remove('hidden');
-      emptyState.classList.add('hidden');
-
-      const q = trainState.filteredQuestions[trainState.currentIndex];
-      document.getElementById('train-current-num').textContent = `${trainState.currentIndex + 1} de ${total}`;
-      document.getElementById('train-q-subject').textContent = q.subject;
-      document.getElementById('train-q-topic').textContent = q.topic;
-      document.getElementById('train-q-exam').textContent = q.exam || 'Fatec · Banco Humanas';
-      document.getElementById('train-q-text').textContent = q.question;
-
-      const selected = trainState.answers[q.id];
-      const isChecked = !!trainState.checked[q.id] || trainState.batchFinished;
-      const statusBadge = document.getElementById('train-q-status-badge');
-
-      if (userStats.wrongQuestionIds.includes(q.id)) {
-        statusBadge.textContent = '🔁 Marcada para revisão';
-        statusBadge.className = 'text-xs font-bold text-amber-600 dark:text-amber-400';
-      } else {
-        statusBadge.textContent = '';
-      }
-
-      const optionsEl = document.getElementById('train-q-options');
-      optionsEl.innerHTML = Object.entries(q.options).map(([letter, text]) => {
-        const isSel = selected === letter;
-        const isCorr = q.correct === letter;
-
-        let cls = 'border-slate-200 dark:border-slate-700 hover:border-fatec-400 bg-slate-50/60 dark:bg-slate-800/50';
-        let badgeCls = 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600';
-
-        if (!isChecked && isSel) {
-          cls = 'border-fatec-600 bg-fatec-50 dark:bg-fatec-900/30 ring-2 ring-fatec-500/30';
-          badgeCls = 'bg-fatec-600 text-white border-fatec-600';
-        } else if (isChecked) {
-          if (isCorr) {
-            cls = 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/25';
-            badgeCls = 'bg-emerald-600 text-white border-emerald-600';
-          } else if (isSel && !isCorr) {
-            cls = 'border-rose-500 bg-rose-50 dark:bg-rose-900/25';
-            badgeCls = 'bg-rose-600 text-white border-rose-600';
-          } else {
-            cls = 'border-slate-200 dark:border-slate-800 opacity-65';
-          }
-        }
-
-        return `
-          <button type="button" onclick="selectTrainOption('${letter}')" ${isChecked ? 'disabled' : ''}
-            class="w-full text-left p-3.5 sm:p-4 rounded-2xl border transition flex items-start gap-3.5 ${cls}">
-            <span class="w-7 h-7 rounded-lg text-xs font-extrabold flex items-center justify-center shrink-0 mt-0.5 ${badgeCls}">
-              ${letter}
-            </span>
-            <span class="text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-snug">${text}</span>
-          </button>
-        `;
-      }).join('');
-
-      const expEl = document.getElementById('train-q-explanation');
-      if (isChecked) {
-        const right = selected === q.correct;
-        expEl.classList.remove('hidden');
-        expEl.className = right
-          ? 'rounded-2xl p-4 text-sm leading-relaxed border bg-emerald-50 dark:bg-emerald-900/25 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
-          : 'rounded-2xl p-4 text-sm leading-relaxed border bg-rose-50 dark:bg-rose-900/25 border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200';
-        expEl.innerHTML = `<strong>${right ? '✓ Você acertou!' : `✕ Gabarito: ${q.correct}.`}</strong> ${q.explanation}`;
-      } else {
-        expEl.classList.add('hidden');
-      }
-
-      document.getElementById('train-prev-btn').disabled = trainState.currentIndex === 0;
-      const nextBtn = document.getElementById('train-next-btn');
-      nextBtn.disabled = trainState.currentIndex >= total - 1;
-
-      const finishBatchBtn = document.getElementById('train-finish-batch-btn');
-      if (trainState.correctionMode === 'final' && !trainState.batchFinished && Object.keys(trainState.answers).length > 0) {
-        finishBatchBtn.classList.remove('hidden');
-      } else {
-        finishBatchBtn.classList.add('hidden');
-      }
-    }
-
-    function selectTrainOption(letter) {
-      const q = trainState.filteredQuestions[trainState.currentIndex];
-      if (!q) return;
-
-      if (trainState.correctionMode === 'imediata') {
-        if (trainState.checked[q.id]) return;
-        trainState.answers[q.id] = letter;
-        trainState.checked[q.id] = true;
-
-        const isCorrect = letter === q.correct;
-        if (isCorrect) trainState.sessionHits += 1;
-        else trainState.sessionMisses += 1;
-
-        recordAnswerAttempt(q, isCorrect);
-      } else {
-        if (trainState.batchFinished) return;
-        trainState.answers[q.id] = letter;
-      }
-
-      renderTrainQuestion();
-    }
-
-    function prevTrainQuestion() {
-      if (trainState.currentIndex > 0) {
-        trainState.currentIndex -= 1;
-        renderTrainQuestion();
-      }
-    }
-
-    function nextTrainQuestion() {
-      if (trainState.currentIndex < trainState.filteredQuestions.length - 1) {
-        trainState.currentIndex += 1;
-        renderTrainQuestion();
-      }
-    }
-
-    function finishBatchCorrection() {
-      if (trainState.batchFinished) return;
-      trainState.batchFinished = true;
-
-      let hits = 0;
-      let answeredCount = 0;
-      const reviewItems = [];
-
-      trainState.filteredQuestions.forEach((q, idx) => {
-        const ans = trainState.answers[q.id];
-        if (ans) {
-          answeredCount += 1;
-          trainState.checked[q.id] = true;
-          const ok = ans === q.correct;
-          if (ok) {
-            hits += 1;
-            trainState.sessionHits += 1;
-          } else {
-            trainState.sessionMisses += 1;
-          }
-          recordAnswerAttempt(q, ok);
-          reviewItems.push(`
-            <div class="p-3.5 rounded-xl border ${ok ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-900/10' : 'border-rose-200 dark:border-rose-800 bg-rose-50/40 dark:bg-rose-900/10'} text-xs sm:text-sm">
-              <div class="font-bold">${idx + 1}. [${q.subject}] ${ok ? '✓ Acerto' : `✕ Erro (Sua: ${ans} | Gabarito: ${q.correct})`}</div>
-              <div class="text-slate-600 dark:text-slate-300 mt-1">${q.explanation}</div>
+        const q = miniQuestions[miniQuizIndex];
+        const chosen = miniQuizAnswers[miniQuizIndex];
+        const hasAnswered = chosen !== undefined;
+        badge.textContent = `Questão ${miniQuizIndex + 1} de ${miniQuestions.length}`;
+
+        container.innerHTML = `
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+              <span class="px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-400 font-bold">${escapeHTML(q.subject)}</span>
+              <span class="px-2.5 py-1 rounded-md kk-card-subtle font-semibold">${escapeHTML(q.exam)}</span>
             </div>
-          `);
-        }
-      });
+            ${q.context ? `<div class="p-3.5 rounded-xl kk-card-subtle text-xs sm:text-sm leading-relaxed opacity-90 border-l-2 border-blue-500">${escapeHTML(q.context)}</div>` : ""}
+            <p class="font-bold text-sm sm:text-base">${escapeHTML(q.prompt)}</p>
+            <div class="space-y-2.5">
+              ${q.options.map((opt, idx) => {
+                let cls = "alt-option";
+                if (hasAnswered) {
+                  cls += " locked";
+                  if (idx === q.answer) cls += " correct";
+                  else if (idx === chosen) cls += " wrong";
+                }
+                return `
+                  <button type="button" class="${cls}" data-mini-opt="${idx}" ${hasAnswered ? "disabled" : ""}>
+                    <span class="alt-key">${letters[idx]}</span>
+                    <span class="text-xs sm:text-sm pt-0.5">${escapeHTML(opt)}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+            ${hasAnswered ? `
+              <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs sm:text-sm space-y-1">
+                <div class="font-extrabold ${chosen === q.answer ? "text-emerald-400" : "text-amber-400"}">
+                  ${chosen === q.answer ? "✅ Resposta Correta!" : `❌ Resposta Incorreta. Gabarito: ${letters[q.answer]}`}
+                </div>
+                <p class="opacity-85 leading-relaxed">${escapeHTML(q.explanation)}</p>
+              </div>
+              <div class="flex justify-end">
+                <button type="button" id="btnMiniNext" class="kk-btn-amber px-5 py-2 text-xs sm:text-sm">
+                  ${miniQuizIndex < miniQuestions.length - 1 ? "Próxima Questão →" : "Ver Resultado Final"}
+                </button>
+              </div>
+            ` : ""}
+          </div>
+        `;
 
-      addHistoryEntry('Treino em Bloco', `${answeredCount} questões respondidas`, `${hits}/${answeredCount} acertos`);
+        container.querySelectorAll("[data-mini-opt]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = Number(btn.getAttribute("data-mini-opt"));
+            miniQuizAnswers[miniQuizIndex] = idx;
+            recordQuestionAttempt(q.id, idx === q.answer, idx);
+            renderMiniQuiz();
+          });
+        });
 
-      const summaryEl = document.getElementById('train-batch-summary');
-      summaryEl.classList.remove('hidden');
-      document.getElementById('train-batch-summary-text').textContent =
-        `Você respondeu ${answeredCount} questões e acertou ${hits} (${answeredCount ? Math.round((hits / answeredCount) * 100) : 0}%).`;
-      document.getElementById('train-batch-review-list').innerHTML = reviewItems.join('');
-
-      renderTrainQuestion();
-      summaryEl.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // =========================================================================
-    // 7. ABA SIMULADO CRONOMETRADO (60 QUESTÕES / 5H OU EXPRESS 15 / 45MIN)
-    // =========================================================================
-    function buildSimuladoQuestions(count) {
-      const result = [];
-      const shuffledBase = [...questionsBank].sort(() => Math.random() - 0.5);
-      while (result.length < count) {
-        for (const item of shuffledBase) {
-          if (result.length >= count) break;
-          result.push({ ...item });
+        const nextBtn = document.getElementById("btnMiniNext");
+        if (nextBtn) {
+          nextBtn.addEventListener("click", () => {
+            miniQuizIndex++;
+            renderMiniQuiz();
+          });
         }
       }
-      return result;
-    }
 
-    function startSimulado() {
-      const type = document.querySelector('input[name="simulado-type"]:checked').value;
-      const count = type === 'oficial' ? 60 : 15;
-      const seconds = type === 'oficial' ? 5 * 3600 : 45 * 60;
+      /* ---------------------------------------------------------
+         7. TREINAR (BANCO DE QUESTÕES)
+      --------------------------------------------------------- */
+      function populateFilterOptions() {
+        const subSelect = document.getElementById("filterSubject");
+        const examSelect = document.getElementById("filterExam");
+        const curSub = subSelect.value;
+        const curExam = examSelect.value;
 
-      simuladoState = {
-        active: true,
-        paused: false,
-        questions: buildSimuladoQuestions(count),
-        currentIndex: 0,
-        answers: {},
-        flagged: {},
-        totalSeconds: seconds,
-        remainingSeconds: seconds,
-        timerInterval: null
-      };
+        const subjects = [...new Set(questions.map((q) => q.subject))].sort();
+        const exams = [...new Set(questions.map((q) => q.exam))].sort().reverse();
 
-      document.getElementById('simulado-setup').classList.add('hidden');
-      document.getElementById('simulado-result').classList.add('hidden');
-      document.getElementById('simulado-active').classList.remove('hidden');
-      document.getElementById('simulado-total-count').textContent = count;
+        subSelect.innerHTML = `<option value="ALL">Todas as Matérias (${questions.length})</option>` +
+          subjects.map((s) => `<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("");
+        if ([...subSelect.options].some((o) => o.value === curSub)) subSelect.value = curSub;
 
-      updateSimuladoTimerDisplay();
-      simuladoState.timerInterval = setInterval(() => {
-        if (!simuladoState.paused && simuladoState.active) {
-          simuladoState.remainingSeconds -= 1;
-          updateSimuladoTimerDisplay();
-          if (simuladoState.remainingSeconds <= 0) {
+        examSelect.innerHTML = `<option value="ALL">Todas as Provas</option>` +
+          exams.map((e) => `<option value="${escapeHTML(e)}">${escapeHTML(e)}</option>`).join("");
+        if ([...examSelect.options].some((o) => o.value === curExam)) examSelect.value = curExam;
+      }
+
+      function applyTrainFilters(resetIndex = true) {
+        const sub = document.getElementById("filterSubject").value;
+        const exam = document.getElementById("filterExam").value;
+        const diff = document.getElementById("filterDifficulty").value;
+        const status = document.getElementById("filterStatus").value;
+        const query = document.getElementById("filterSearch").value.trim().toLowerCase();
+
+        trainFiltered = questions.filter((q) => {
+          if (sub !== "ALL" && q.subject !== sub) return false;
+          if (exam !== "ALL" && q.exam !== exam) return false;
+          if (diff !== "ALL" && q.difficulty !== diff) return false;
+
+          const ans = progress.answered[q.id];
+          if (status === "UNANSWERED" && ans) return false;
+          if (status === "WRONG" && (!ans || ans.correct)) return false;
+          if (status === "FAVORITE" && !progress.favorites.includes(q.id)) return false;
+
+          if (query) {
+            const haystack = `${q.subject} ${q.exam} ${q.context || ""} ${q.prompt} ${q.options.join(" ")}`.toLowerCase();
+            if (!haystack.includes(query)) return false;
+          }
+          return true;
+        });
+
+        if (resetIndex) trainCurrentIndex = 0;
+        if (trainCurrentIndex >= trainFiltered.length) trainCurrentIndex = Math.max(0, trainFiltered.length - 1);
+
+        document.getElementById("trainFilteredCount").textContent = `${trainFiltered.length} ${trainFiltered.length === 1 ? "questão" : "questões"}`;
+        renderTrainQuestion();
+      }
+
+      function recordQuestionAttempt(qId, isCorrect, selectedIdx) {
+        const prev = progress.answered[qId];
+        progress.answered[qId] = {
+          selected: selectedIdx,
+          correct: isCorrect,
+          timestamp: Date.now()
+        };
+        if (!prev) {
+          progress.dailySolvedCount = (progress.dailySolvedCount || 0) + 1;
+        }
+        saveProgress();
+      }
+
+      let trainPendingSelection = null;
+
+      function renderTrainQuestion() {
+        const stage = document.getElementById("trainQuestionStage");
+        const letters = ["A", "B", "C", "D", "E"];
+
+        if (!trainFiltered.length) {
+          stage.innerHTML = `
+            <div class="text-center py-12 space-y-3">
+              <div class="text-4xl">🔍</div>
+              <h3 class="text-xl font-extrabold">Nenhuma questão encontrada com esses filtros</h3>
+              <p class="text-xs sm:text-sm opacity-75">Tente limpar os filtros ou selecionar outra disciplina.</p>
+              <button type="button" id="btnEmptyReset" class="kk-btn-primary px-5 py-2 text-xs">Mostrar Todas as Questões</button>
+            </div>
+          `;
+          document.getElementById("btnEmptyReset").addEventListener("click", () => {
+            document.getElementById("filterSubject").value = "ALL";
+            document.getElementById("filterExam").value = "ALL";
+            document.getElementById("filterDifficulty").value = "ALL";
+            document.getElementById("filterStatus").value = "ALL";
+            document.getElementById("filterSearch").value = "";
+            applyTrainFilters(true);
+          });
+          return;
+        }
+
+        const q = trainFiltered[trainCurrentIndex];
+        const savedAns = progress.answered[q.id];
+        const isFav = progress.favorites.includes(q.id);
+        const elimList = progress.eliminated[q.id] || [];
+
+        stage.innerHTML = `
+          <div class="space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-blue-500/15">
+              <div class="flex flex-wrap items-center gap-2 text-xs">
+                <span class="px-3 py-1 rounded-lg bg-blue-600 text-white font-extrabold">Questão ${trainCurrentIndex + 1} de ${trainFiltered.length}</span>
+                <span class="px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-400 font-bold">${escapeHTML(q.subject)}</span>
+                <span class="px-2.5 py-1 rounded-lg kk-card-subtle font-semibold">${escapeHTML(q.exam)}</span>
+                <span class="px-2.5 py-1 rounded-lg kk-card-subtle font-semibold">${escapeHTML(q.difficulty)}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" id="btnToggleFav" class="px-3 py-1.5 rounded-lg kk-card-subtle text-xs font-bold hover:border-amber-500 transition-colors" title="Favoritar questão">
+                  ${isFav ? "⭐ Favoritada" : "☆ Favoritar"}
+                </button>
+                ${savedAns ? `
+                  <button type="button" id="btnRedoQuestion" class="px-3 py-1.5 rounded-lg kk-card-subtle text-xs font-semibold hover:border-blue-500">
+                    🔄 Refazer
+                  </button>
+                ` : ""}
+              </div>
+            </div>
+
+            ${q.context ? `
+              <div class="p-4 rounded-xl kk-card-subtle text-xs sm:text-sm leading-relaxed whitespace-pre-line border-l-4 border-l-blue-500">
+                ${escapeHTML(q.context)}
+              </div>
+            ` : ""}
+
+            <h2 class="text-base sm:text-lg font-bold leading-snug">${escapeHTML(q.prompt)}</h2>
+
+            <div class="space-y-2.5">
+              ${q.options.map((opt, idx) => {
+                const isEliminated = elimList.includes(idx);
+                let cls = "alt-option";
+                if (isEliminated && !savedAns) cls += " eliminated";
+                if (savedAns) {
+                  cls += " locked";
+                  if (idx === q.answer) cls += " correct";
+                  else if (idx === savedAns.selected) cls += " wrong";
+                } else if (trainPendingSelection === idx) {
+                  cls += " selected";
+                }
+
+                return `
+                  <div class="flex items-center gap-2">
+                    <button type="button" class="${cls} flex-1" data-train-opt="${idx}" ${savedAns ? "disabled" : ""}>
+                      <span class="alt-key">${letters[idx]}</span>
+                      <span class="text-xs sm:text-sm pt-0.5 leading-relaxed">${escapeHTML(opt)}</span>
+                    </button>
+                    ${!savedAns ? `
+                      <button type="button" data-elim-opt="${idx}" class="p-2.5 rounded-xl kk-card-subtle text-xs opacity-60 hover:opacity-100 hover:text-red-400 transition-all" title="Riscar / Eliminar alternativa">
+                        ✂️
+                      </button>
+                    ` : ""}
+                  </div>
+                `;
+              }).join("")}
+            </div>
+
+            ${savedAns ? `
+              <div class="p-4 sm:p-5 rounded-2xl ${savedAns.correct ? "bg-emerald-500/10 border border-emerald-500/35" : "bg-red-500/10 border border-red-500/35"} space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-extrabold text-sm ${savedAns.correct ? "text-emerald-400" : "text-red-400"}">
+                    ${savedAns.correct ? "✅ Excelente! Você acertou" : `❌ Alternativa incorreta · Gabarito oficial: ${letters[q.answer]}`}
+                  </span>
+                </div>
+                <p class="text-xs sm:text-sm opacity-90 leading-relaxed"><strong>Resolução comentada:</strong> ${escapeHTML(q.explanation)}</p>
+              </div>
+            ` : ""}
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-blue-500/15">
+              <div class="flex items-center gap-2">
+                <button type="button" id="btnTrainPrev" class="kk-btn-outline px-4 py-2 text-xs sm:text-sm" ${trainCurrentIndex === 0 ? "disabled" : ""}>
+                  ← Anterior
+                </button>
+                <button type="button" id="btnTrainNext" class="kk-btn-outline px-4 py-2 text-xs sm:text-sm" ${trainCurrentIndex >= trainFiltered.length - 1 ? "disabled" : ""}>
+                  Próxima →
+                </button>
+              </div>
+
+              ${!savedAns ? `
+                <button type="button" id="btnConfirmTrainAnswer" class="kk-btn-amber px-6 py-2.5 text-xs sm:text-sm" ${trainPendingSelection === null ? "disabled style='opacity:0.5;cursor:not-allowed;'" : ""}>
+                  Confirmar Resposta (Enter)
+                </button>
+              ` : `
+                <button type="button" id="btnNextAfterAnswer" class="kk-btn-primary px-6 py-2.5 text-xs sm:text-sm" ${trainCurrentIndex >= trainFiltered.length - 1 ? "disabled" : ""}>
+                  Avançar para Próxima →
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+
+        stage.querySelectorAll("[data-train-opt]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            trainPendingSelection = Number(btn.getAttribute("data-train-opt"));
+            renderTrainQuestion();
+          });
+        });
+
+        stage.querySelectorAll("[data-elim-opt]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = Number(btn.getAttribute("data-elim-opt"));
+            const arr = progress.eliminated[q.id] || [];
+            if (arr.includes(idx)) {
+              progress.eliminated[q.id] = arr.filter((i) => i !== idx);
+            } else {
+              progress.eliminated[q.id] = [...arr, idx];
+              if (trainPendingSelection === idx) trainPendingSelection = null;
+            }
+            saveProgress();
+            renderTrainQuestion();
+          });
+        });
+
+        const btnConfirm = document.getElementById("btnConfirmTrainAnswer");
+        if (btnConfirm) {
+          btnConfirm.addEventListener("click", confirmCurrentTrainQuestion);
+        }
+
+        const btnFav = document.getElementById("btnToggleFav");
+        if (btnFav) {
+          btnFav.addEventListener("click", () => {
+            if (progress.favorites.includes(q.id)) {
+              progress.favorites = progress.favorites.filter((id) => id !== q.id);
+              showToast("Removida dos favoritos", "Questão desmarcada.", "info");
+            } else {
+              progress.favorites.push(q.id);
+              showToast("Questão favoritada ⭐", "Salva na sua lista de revisão.", "amber");
+            }
+            saveProgress();
+            renderTrainQuestion();
+          });
+        }
+
+        const btnRedo = document.getElementById("btnRedoQuestion");
+        if (btnRedo) {
+          btnRedo.addEventListener("click", () => {
+            delete progress.answered[q.id];
+            trainPendingSelection = null;
+            saveProgress();
+            renderTrainQuestion();
+          });
+        }
+
+        const btnPrev = document.getElementById("btnTrainPrev");
+        if (btnPrev) {
+          btnPrev.addEventListener("click", () => {
+            if (trainCurrentIndex > 0) {
+              trainCurrentIndex--;
+              trainPendingSelection = null;
+              renderTrainQuestion();
+            }
+          });
+        }
+
+        const btnNext = document.getElementById("btnTrainNext");
+        const btnNextAfter = document.getElementById("btnNextAfterAnswer");
+        [btnNext, btnNextAfter].forEach((b) => {
+          if (b) {
+            b.addEventListener("click", () => {
+              if (trainCurrentIndex < trainFiltered.length - 1) {
+                trainCurrentIndex++;
+                trainPendingSelection = null;
+                renderTrainQuestion();
+              }
+            });
+          }
+        });
+      }
+
+      function confirmCurrentTrainQuestion() {
+        if (!trainFiltered.length || trainPendingSelection === null) return;
+        const q = trainFiltered[trainCurrentIndex];
+        if (progress.answered[q.id]) return;
+
+        const isCorrect = trainPendingSelection === q.answer;
+        recordQuestionAttempt(q.id, isCorrect, trainPendingSelection);
+        trainPendingSelection = null;
+        renderTrainQuestion();
+
+        const autoAdv = document.getElementById("chkAutoAdvance")?.checked;
+        if (isCorrect && autoAdv && trainCurrentIndex < trainFiltered.length - 1) {
+          setTimeout(() => {
+            trainCurrentIndex++;
+            renderTrainQuestion();
+          }, 950);
+        }
+      }
+
+      /* ---------------------------------------------------------
+         8. SIMULADO CRONOMETRADO
+      --------------------------------------------------------- */
+      function populateSimSubjects() {
+        const sel = document.getElementById("simSubjectFilter");
+        const subjects = [...new Set(questions.map((q) => q.subject))].sort();
+        sel.innerHTML = `<option value="ALL">Todas as Matérias (Prova Geral)</option>` +
+          subjects.map((s) => `<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("");
+      }
+
+      function startSimulado() {
+        const mode = document.querySelector('input[name="simMode"]:checked')?.value || "express";
+        const subj = document.getElementById("simSubjectFilter").value;
+
+        let pool = subj === "ALL" ? [...questions] : questions.filter((q) => q.subject === subj);
+        pool.sort(() => Math.random() - 0.5);
+
+        let count = 10;
+        let mins = 25;
+        let label = "Simulado Express (10q)";
+        if (mode === "medio") {
+          count = Math.min(18, pool.length);
+          mins = 45;
+          label = `Meio Simulado (${count}q)`;
+        } else if (mode === "completo") {
+          count = pool.length;
+          mins = Math.max(25, Math.round(count * 2.5));
+          label = `Maratona Completa (${count}q)`;
+        } else {
+          count = Math.min(10, pool.length);
+          mins = 25;
+          label = `Simulado Express (${count}q)`;
+        }
+
+        if (pool.length === 0) {
+          showToast("Sem questões", "Nenhuma questão encontrada para essa área.", "error");
+          return;
+        }
+
+        simState = {
+          active: true,
+          questions: pool.slice(0, count),
+          answers: {},
+          flagged: {},
+          currentIdx: 0,
+          secondsLeft: mins * 60,
+          totalSeconds: mins * 60,
+          timerId: null,
+          modeName: label
+        };
+
+        document.getElementById("simConfigPanel").classList.add("hidden");
+        document.getElementById("simResultPanel").classList.add("hidden");
+        document.getElementById("simActivePanel").classList.remove("hidden");
+
+        updateSimTimerUI();
+        simState.timerId = setInterval(() => {
+          simState.secondsLeft--;
+          updateSimTimerUI();
+          if (simState.secondsLeft <= 0) {
             finishSimulado(true);
           }
+        }, 1000);
+
+        renderSimQuestion();
+      }
+
+      function updateSimTimerUI() {
+        const m = Math.floor(Math.max(0, simState.secondsLeft) / 60);
+        const s = Math.max(0, simState.secondsLeft) % 60;
+        const display = document.getElementById("simTimerDisplay");
+        display.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+        if (simState.secondsLeft <= 120) {
+          display.classList.remove("text-amber-400");
+          display.classList.add("text-red-500", "animate-pulse");
+        } else {
+          display.classList.add("text-amber-400");
+          display.classList.remove("text-red-500", "animate-pulse");
         }
-      }, 1000);
-
-      renderSimuladoQuestion();
-      renderSimuladoGrid();
-    }
-
-    function formatSeconds(sec) {
-      const h = Math.floor(sec / 3600);
-      const m = Math.floor((sec % 3600) / 60);
-      const s = sec % 60;
-      return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
-    }
-
-    function updateSimuladoTimerDisplay() {
-      const el = document.getElementById('simulado-timer');
-      el.textContent = formatSeconds(Math.max(0, simuladoState.remainingSeconds));
-      if (simuladoState.remainingSeconds <= 300) {
-        el.classList.add('text-rose-400');
-      } else {
-        el.classList.remove('text-rose-400');
       }
-    }
 
-    function toggleSimuladoPause() {
-      simuladoState.paused = !simuladoState.paused;
-      const btn = document.getElementById('simulado-pause-btn');
-      btn.textContent = simuladoState.paused ? 'Retomar' : 'Pausar';
-      showToast(simuladoState.paused ? 'Cronômetro pausado.' : 'Cronômetro retomado.', 'info');
-    }
+      function renderSimQuestion() {
+        const q = simState.questions[simState.currentIdx];
+        const letters = ["A", "B", "C", "D", "E"];
+        const chosen = simState.answers[simState.currentIdx];
+        const isFlagged = !!simState.flagged[simState.currentIdx];
 
-    function renderSimuladoQuestion() {
-      const idx = simuladoState.currentIndex;
-      const q = simuladoState.questions[idx];
-      const total = simuladoState.questions.length;
+        const answeredCount = Object.keys(simState.answers).length;
+        document.getElementById("simProgressText").textContent = `${answeredCount} / ${simState.questions.length}`;
 
-      document.getElementById('sim-q-badge').textContent = `Questão ${idx + 1} de ${total} · ${q.subject}`;
-      document.getElementById('sim-q-text').textContent = q.question;
-
-      const flagBtn = document.getElementById('sim-flag-btn');
-      flagBtn.textContent = simuladoState.flagged[idx] ? '🚩 Marcada' : '🚩 Marcar para revisar';
-
-      const selected = simuladoState.answers[idx];
-      document.getElementById('sim-q-options').innerHTML = Object.entries(q.options).map(([letter, text]) => {
-        const isSel = selected === letter;
-        return `
-          <button type="button" onclick="selectSimuladoOption('${letter}')"
-            class="w-full text-left p-3.5 sm:p-4 rounded-2xl border transition flex items-start gap-3.5 ${
-              isSel
-                ? 'border-fatec-600 bg-fatec-50 dark:bg-fatec-900/30 ring-2 ring-fatec-500/30'
-                : 'border-slate-200 dark:border-slate-700 hover:border-fatec-400 bg-slate-50/60 dark:bg-slate-800/50'
-            }">
-            <span class="w-7 h-7 rounded-lg text-xs font-extrabold flex items-center justify-center shrink-0 mt-0.5 ${
-              isSel ? 'bg-fatec-600 text-white' : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600'
-            }">${letter}</span>
-            <span class="text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-snug">${text}</span>
-          </button>
-        `;
-      }).join('');
-
-      document.getElementById('sim-prev-btn').disabled = idx === 0;
-      document.getElementById('sim-next-btn').disabled = idx === total - 1;
-      document.getElementById('simulado-answered-count').textContent = Object.keys(simuladoState.answers).length;
-    }
-
-    function selectSimuladoOption(letter) {
-      if (simuladoState.paused) {
-        showToast('Retome o cronômetro para marcar respostas.', 'warning');
-        return;
-      }
-      simuladoState.answers[simuladoState.currentIndex] = letter;
-      renderSimuladoQuestion();
-      renderSimuladoGrid();
-    }
-
-    function toggleSimuladoFlag() {
-      const idx = simuladoState.currentIndex;
-      simuladoState.flagged[idx] = !simuladoState.flagged[idx];
-      renderSimuladoQuestion();
-      renderSimuladoGrid();
-    }
-
-    function navigateSimuladoQuestion(newIdx) {
-      if (newIdx >= 0 && newIdx < simuladoState.questions.length) {
-        simuladoState.currentIndex = newIdx;
-        renderSimuladoQuestion();
-        renderSimuladoGrid();
-      }
-    }
-
-    function renderSimuladoGrid() {
-      const grid = document.getElementById('simulado-grid');
-      grid.innerHTML = simuladoState.questions.map((_, i) => {
-        const isCurrent = i === simuladoState.currentIndex;
-        const isAnswered = !!simuladoState.answers[i];
-        const isFlagged = !!simuladoState.flagged[i];
-
-        let cls = 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
-        if (isFlagged) cls = 'bg-amber-400 text-slate-900 font-bold';
-        else if (isAnswered) cls = 'bg-fatec-600 text-white font-bold';
-
-        if (isCurrent) cls += ' ring-2 ring-offset-2 ring-slate-900 dark:ring-white dark:ring-offset-slate-900';
-
-        return `
-          <button onclick="navigateSimuladoQuestion(${i})" class="h-9 rounded-lg text-xs transition ${cls}">
-            ${i + 1}
-          </button>
-        `;
-      }).join('');
-    }
-
-    function confirmFinishSimulado() {
-      const answered = Object.keys(simuladoState.answers).length;
-      const total = simuladoState.questions.length;
-      showConfirm(
-        'Entregar Simulado?',
-        `Você respondeu ${answered} de ${total} questões. Deseja encerrar e ver sua nota agora?`,
-        () => finishSimulado(false)
-      );
-    }
-
-    function finishSimulado(timeUp) {
-      simuladoState.active = false;
-      clearInterval(simuladoState.timerInterval);
-
-      const total = simuladoState.questions.length;
-      let hits = 0;
-
-      const listHtml = simuladoState.questions.map((q, idx) => {
-        const userAns = simuladoState.answers[idx];
-        const isCorrect = userAns === q.correct;
-        if (isCorrect) hits += 1;
-        if (userAns) {
-          recordAnswerAttempt(q, isCorrect);
-        }
-
-        return `
-          <div class="p-4 rounded-2xl border ${
-            isCorrect
-              ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-900/15'
-              : 'border-rose-200 dark:border-rose-800 bg-rose-50/40 dark:bg-rose-900/15'
-          } text-xs sm:text-sm space-y-1">
-            <div class="font-bold flex flex-wrap justify-between gap-2">
-              <span>Questão ${idx + 1} · ${q.subject} (${q.topic})</span>
-              <span>${isCorrect ? '✓ Correta' : `✕ Sua: ${userAns || 'Branco'} | Gabarito: ${q.correct}`}</span>
+        const box = document.getElementById("simQuestionBox");
+        box.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-blue-500/15">
+            <div class="flex items-center gap-2 text-xs">
+              <span class="px-3 py-1 rounded-lg bg-blue-600 text-white font-extrabold">Questão ${simState.currentIdx + 1} de ${simState.questions.length}</span>
+              <span class="px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-400 font-bold">${escapeHTML(q.subject)}</span>
             </div>
-            <p class="text-slate-700 dark:text-slate-300 line-clamp-2">${q.question}</p>
-            <p class="text-slate-500 dark:text-slate-400 italic">${q.explanation}</p>
+            <button type="button" id="btnSimFlag" class="px-3 py-1.5 rounded-lg kk-card-subtle text-xs font-bold ${isFlagged ? "text-amber-400 border-amber-500" : ""}">
+              ${isFlagged ? "🚩 Marcada para Revisão" : "🏳️ Marcar Revisão"}
+            </button>
+          </div>
+
+          ${q.context ? `<div class="p-4 rounded-xl kk-card-subtle text-xs sm:text-sm leading-relaxed border-l-4 border-l-blue-500">${escapeHTML(q.context)}</div>` : ""}
+
+          <h2 class="text-base sm:text-lg font-bold leading-snug">${escapeHTML(q.prompt)}</h2>
+
+          <div class="space-y-2.5">
+            ${q.options.map((opt, idx) => `
+              <button type="button" class="alt-option ${chosen === idx ? "selected" : ""}" data-sim-opt="${idx}">
+                <span class="alt-key">${letters[idx]}</span>
+                <span class="text-xs sm:text-sm pt-0.5">${escapeHTML(opt)}</span>
+              </button>
+            `).join("")}
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-blue-500/15">
+            <button type="button" id="btnSimPrev" class="kk-btn-outline px-4 py-2 text-xs sm:text-sm" ${simState.currentIdx === 0 ? "disabled" : ""}>← Anterior</button>
+            <button type="button" id="btnSimNext" class="kk-btn-primary px-5 py-2 text-xs sm:text-sm" ${simState.currentIdx >= simState.questions.length - 1 ? "disabled" : ""}>Próxima →</button>
           </div>
         `;
-      }).join('');
 
-      const elapsed = simuladoState.totalSeconds - Math.max(0, simuladoState.remainingSeconds);
-      const pct = Math.round((hits / total) * 100);
+        box.querySelectorAll("[data-sim-opt]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            simState.answers[simState.currentIdx] = Number(btn.getAttribute("data-sim-opt"));
+            renderSimQuestion();
+          });
+        });
 
-      addHistoryEntry(
-        total === 60 ? 'Simulado Oficial (60q)' : 'Simulado Express (15q)',
-        `Tempo: ${formatSeconds(elapsed)}`,
-        `${hits}/${total} (${pct}%)`
-      );
+        document.getElementById("btnSimFlag").addEventListener("click", () => {
+          simState.flagged[simState.currentIdx] = !simState.flagged[simState.currentIdx];
+          renderSimQuestion();
+        });
 
-      document.getElementById('simulado-active').classList.add('hidden');
-      document.getElementById('simulado-result').classList.remove('hidden');
-      document.getElementById('sim-res-title').textContent =
-        `${timeUp ? 'Tempo esgotado! ' : ''}Você acertou ${hits} de ${total} questões (${pct}%)`;
-      document.getElementById('sim-res-time').textContent = `Tempo utilizado: ${formatSeconds(elapsed)}`;
-      document.getElementById('sim-res-list').innerHTML = listHtml;
-    }
+        document.getElementById("btnSimPrev").addEventListener("click", () => {
+          if (simState.currentIdx > 0) {
+            simState.currentIdx--;
+            renderSimQuestion();
+          }
+        });
 
-    function resetSimuladoUI() {
-      document.getElementById('simulado-result').classList.add('hidden');
-      document.getElementById('simulado-active').classList.add('hidden');
-      document.getElementById('simulado-setup').classList.remove('hidden');
-    }
+        document.getElementById("btnSimNext").addEventListener("click", () => {
+          if (simState.currentIdx < simState.questions.length - 1) {
+            simState.currentIdx++;
+            renderSimQuestion();
+          }
+        });
 
-    // =========================================================================
-    // 8. ABA ROTEIRO DE ESTUDOS
-    // =========================================================================
-    function loadRoadmap() {
-      const keys = getScopedStorageKeys();
-      try {
-        roadmapChecked = JSON.parse(localStorage.getItem(keys.roadmap)) || {};
-      } catch (e) {
-        roadmapChecked = {};
-      }
-    }
+        const grid = document.getElementById("simGridNav");
+        grid.innerHTML = simState.questions.map((_, idx) => {
+          const isAns = simState.answers[idx] !== undefined;
+          const isFlg = !!simState.flagged[idx];
+          const isCur = idx === simState.currentIdx;
+          let bg = "kk-card-subtle";
+          if (isFlg) bg = "bg-amber-500 text-slate-950 font-extrabold";
+          else if (isAns) bg = "bg-blue-600 text-white font-bold";
 
-    function saveRoadmap() {
-      const keys = getScopedStorageKeys();
-      localStorage.setItem(keys.roadmap, JSON.stringify(roadmapChecked));
-    }
-
-    function toggleRoadmapItem(id) {
-      roadmapChecked[id] = !roadmapChecked[id];
-      saveRoadmap();
-      renderRoadmap();
-    }
-
-    function renderRoadmap() {
-      const container = document.getElementById('roadmap-container');
-      let totalItems = 0;
-      let doneItems = 0;
-
-      container.innerHTML = ROADMAP_DATA.map(block => {
-        const itemsHtml = block.items.map(item => {
-          totalItems += 1;
-          const checked = !!roadmapChecked[item.id];
-          if (checked) doneItems += 1;
           return `
-            <label class="cursor-pointer flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
-              <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleRoadmapItem('${item.id}')"
-                class="mt-1 w-4 h-4 rounded accent-fatec-600 shrink-0" />
-              <span class="text-sm ${checked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-200'}">
-                ${item.title}
-              </span>
-            </label>
+            <button type="button" data-sim-jump="${idx}" class="h-9 rounded-lg text-xs ${bg} ${isCur ? "ring-2 ring-amber-400" : ""} transition-all">
+              ${idx + 1}
+            </button>
           `;
-        }).join('');
+        }).join("");
 
-        return `
-          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-3">
-            <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
-              <h3 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white">${block.category}</h3>
-              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-fatec-50 text-fatec-700 dark:bg-fatec-900/40 dark:text-fatec-300">
-                ${block.badge}
-              </span>
-            </div>
-            <div class="space-y-1">${itemsHtml}</div>
-          </div>
-        `;
-      }).join('');
+        grid.querySelectorAll("[data-sim-jump]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            simState.currentIdx = Number(btn.getAttribute("data-sim-jump"));
+            renderSimQuestion();
+          });
+        });
+      }
 
-      const pct = totalItems ? Math.round((doneItems / totalItems) * 100) : 0;
-      document.getElementById('roadmap-percent').textContent = `${pct}%`;
-      document.getElementById('roadmap-count-text').textContent = `${doneItems} de ${totalItems} tópicos`;
-      document.getElementById('roadmap-progress-bar').style.width = `${pct}%`;
-    }
+      function finishSimulado(autoTimeout = false) {
+        if (simState.timerId) clearInterval(simState.timerId);
+        simState.active = false;
 
-    // =========================================================================
-    // 9. ABA DESEMPENHO
-    // =========================================================================
-    function renderStatsDashboard() {
-      const total = userStats.totalAnswered;
-      const hits = userStats.totalHits;
-      const acc = total > 0 ? Math.round((hits / total) * 100) : 0;
+        let hits = 0;
+        const bySubject = {};
 
-      document.getElementById('stat-total-answered').textContent = total;
-      document.getElementById('stat-total-hits').textContent = hits;
-      document.getElementById('stat-accuracy').textContent = `${acc}%`;
-      document.getElementById('stat-wrong-pool').textContent = userStats.wrongQuestionIds.length;
+        simState.questions.forEach((q, idx) => {
+          const userAns = simState.answers[idx];
+          const isCorrect = userAns === q.answer;
+          if (isCorrect) hits++;
 
-      const subjContainer = document.getElementById('stat-by-subject');
-      const subjects = [...new Set([...questionsBank.map(q => q.subject), ...Object.keys(userStats.bySubject)])];
+          if (!bySubject[q.subject]) bySubject[q.subject] = { total: 0, hits: 0 };
+          bySubject[q.subject].total++;
+          if (isCorrect) bySubject[q.subject].hits++;
 
-      subjContainer.innerHTML = subjects.map(subj => {
-        const data = userStats.bySubject[subj] || { answered: 0, hits: 0 };
-        const pct = data.answered > 0 ? Math.round((data.hits / data.answered) * 100) : 0;
-        return `
-          <div class="space-y-1.5">
-            <div class="flex justify-between text-xs sm:text-sm font-semibold">
-              <span class="text-slate-800 dark:text-slate-200">${subj}</span>
-              <span class="text-slate-500 dark:text-slate-400">${data.hits}/${data.answered} (${pct}%)</span>
-            </div>
-            <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div class="h-full bg-fatec-600 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
+          if (userAns !== undefined) {
+            recordQuestionAttempt(q.id, isCorrect, userAns);
+          }
+        });
 
-      const historyContainer = document.getElementById('stat-history-list');
-      if (userStats.history.length === 0) {
-        historyContainer.innerHTML = `
-          <p class="text-sm text-slate-500 dark:text-slate-400 py-6 text-center">
-            Nenhuma sessão concluída ainda. Experimente o Mini Quiz ou um Simulado!
-          </p>
-        `;
-      } else {
-        historyContainer.innerHTML = userStats.history.map(item => `
-          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 text-xs sm:text-sm">
-            <div>
-              <div class="font-bold text-slate-900 dark:text-white">${item.mode}</div>
-              <div class="text-xs text-slate-500 dark:text-slate-400">${item.detail} · ${item.date}</div>
-            </div>
-            <span class="px-2.5 py-1 rounded-lg font-bold bg-fatec-100 text-fatec-800 dark:bg-fatec-900/50 dark:text-fatec-200">
-              ${item.scoreText}
+        const total = simState.questions.length;
+        const percent = Math.round((hits / total) * 100);
+        const spentSec = simState.totalSeconds - Math.max(0, simState.secondsLeft);
+        const spentStr = `${Math.floor(spentSec / 60)}m ${spentSec % 60}s`;
+
+        progress.simHistory.unshift({
+          date: new Date().toLocaleDateString("pt-BR"),
+          mode: simState.modeName,
+          score: `${hits}/${total}`,
+          percent,
+          durationStr: spentStr
+        });
+        saveProgress();
+
+        document.getElementById("simActivePanel").classList.add("hidden");
+        const resPanel = document.getElementById("simResultPanel");
+        resPanel.classList.remove("hidden");
+
+        const letters = ["A", "B", "C", "D", "E"];
+        resPanel.innerHTML = `
+          <div class="brand-hero rounded-3xl p-6 sm:p-8 text-center space-y-4">
+            <span class="inline-block px-3 py-1 rounded-full bg-amber-500 text-slate-950 font-extrabold text-xs uppercase">
+              ${autoTimeout ? "⏰ Tempo Esgotado · Prova Finalizada" : "🏁 Simulado Concluído"}
             </span>
-          </div>
-        `).join('');
-      }
-    }
-
-    function confirmResetStats() {
-      showConfirm(
-        'Zerar todas as estatísticas?',
-        'Isso limpará seu histórico de acertos, erros e a lista de revisão no navegador.',
-        () => {
-          userStats = {
-            totalAnswered: 0,
-            totalHits: 0,
-            bySubject: {},
-            wrongQuestionIds: [],
-            history: []
-          };
-          saveStats();
-          renderStatsDashboard();
-          showToast('Estatísticas zeradas com sucesso.', 'info');
-        }
-      );
-    }
-
-    // =========================================================================
-    // 10. ABA CONTATO
-    // =========================================================================
-    function handleContactSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById('contact-name').value.trim();
-      const email = document.getElementById('contact-email').value.trim();
-      const msg = document.getElementById('contact-message').value.trim();
-      if (!name || !email || !msg) return;
-
-      document.getElementById('contact-form').reset();
-      document.getElementById('contact-success').classList.remove('hidden');
-      showToast('Mensagem enviada! Obrigado pelo contato.', 'success');
-    }
-
-    // =========================================================================
-    // 11. ABA ADMIN (CADASTRAR / EXCLUIR / RESTAURAR QUESTÕES)
-    // =========================================================================
-    function handleAdminAddQuestion(e) {
-      e.preventDefault();
-      const newQ = {
-        id: Date.now(),
-        subject: document.getElementById('admin-subject').value,
-        topic: document.getElementById('admin-topic').value.trim(),
-        exam: 'Fatec · Cadastrada no Admin',
-        question: document.getElementById('admin-question').value.trim(),
-        options: {
-          A: document.getElementById('admin-opt-A').value.trim(),
-          B: document.getElementById('admin-opt-B').value.trim(),
-          C: document.getElementById('admin-opt-C').value.trim(),
-          D: document.getElementById('admin-opt-D').value.trim(),
-          E: document.getElementById('admin-opt-E').value.trim()
-        },
-        correct: document.getElementById('admin-correct').value,
-        explanation: document.getElementById('admin-explanation').value.trim()
-      };
-
-      questionsBank.unshift(newQ);
-      saveQuestionsBank();
-      populateSubjectFilter();
-      renderAdminList();
-      document.getElementById('admin-form').reset();
-      showToast('Questão adicionada ao banco!', 'success');
-    }
-
-    function deleteAdminQuestion(id) {
-      if (questionsBank.length <= 1) {
-        showToast('O banco precisa manter pelo menos 1 questão.', 'warning');
-        return;
-      }
-      questionsBank = questionsBank.filter(q => q.id !== id);
-      saveQuestionsBank();
-      populateSubjectFilter();
-      renderAdminList();
-      showToast('Questão removida.', 'info');
-    }
-
-    function renderAdminList() {
-      const query = (document.getElementById('admin-search')?.value || '').toLowerCase();
-      const filtered = questionsBank.filter(q =>
-        q.question.toLowerCase().includes(query) ||
-        q.subject.toLowerCase().includes(query) ||
-        q.topic.toLowerCase().includes(query)
-      );
-
-      const listEl = document.getElementById('admin-questions-list');
-      listEl.innerHTML = filtered.map((q, idx) => `
-        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 flex items-start justify-between gap-3">
-          <div class="space-y-1">
-            <div class="flex flex-wrap items-center gap-2 text-xs">
-              <span class="font-bold text-fatec-600 dark:text-fatec-400">#${idx + 1} · ${q.subject}</span>
-              <span class="text-slate-500 dark:text-slate-400">(${q.topic})</span>
-              <span class="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-bold">
-                Gabarito: ${q.correct}
-              </span>
+            <h2 class="text-3xl sm:text-4xl font-black">Nota Final: <span class="text-amber-400">${percent}%</span></h2>
+            <p class="text-sm text-slate-300">Você acertou <strong>${hits} de ${total}</strong> questões em <strong>${spentStr}</strong>.</p>
+            <div class="pt-2">
+              <button type="button" id="btnNewSimulado" class="kk-btn-amber px-6 py-2.5 text-sm">Fazer Novo Simulado</button>
             </div>
-            <p class="text-xs sm:text-sm text-slate-800 dark:text-slate-200 line-clamp-2">${q.question}</p>
           </div>
-          <button onclick="deleteAdminQuestion(${q.id})" title="Excluir questão"
-            class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-900/30 shrink-0 transition">
-            Excluir
-          </button>
-        </div>
-      `).join('');
-    }
 
-    function exportBankJSON() {
-      const textarea = document.createElement('textarea');
-      textarea.value = JSON.stringify(questionsBank, null, 2);
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-        document.execCommand('copy');
-        showToast('JSON do banco copiado para a área de transferência!', 'success');
-      } catch (err) {
-        showToast('Não foi possível copiar automaticamente.', 'error');
+          <div class="kk-card p-6 space-y-4">
+            <h3 class="text-lg font-extrabold">📊 Desempenho por Matéria neste Simulado</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              ${Object.entries(bySubject).map(([subj, st]) => {
+                const p = Math.round((st.hits / st.total) * 100);
+                return `
+                  <div class="kk-card-subtle p-3.5 space-y-1.5">
+                    <div class="flex justify-between text-xs font-bold">
+                      <span class="truncate">${escapeHTML(subj)}</span>
+                      <span class="${p >= 70 ? "text-emerald-400" : "text-amber-400"}">${st.hits}/${st.total} (${p}%)</span>
+                    </div>
+                    <div class="w-full h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-full ${p >= 70 ? "bg-emerald-500" : "bg-amber-500"}" style="width:${p}%"></div>
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <div class="kk-card p-6 space-y-4">
+            <h3 class="text-lg font-extrabold">📝 Gabarito Comentado Questão a Questão</h3>
+            <div class="space-y-4">
+              ${simState.questions.map((q, idx) => {
+                const u = simState.answers[idx];
+                const ok = u === q.answer;
+                return `
+                  <div class="p-4 rounded-xl kk-card-subtle border-l-4 ${ok ? "border-l-emerald-500" : "border-l-red-500"} space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <span class="font-extrabold">Questão ${idx + 1} · ${escapeHTML(q.subject)}</span>
+                      <span class="font-bold ${ok ? "text-emerald-400" : "text-red-400"}">
+                        ${u === undefined ? "Não respondida" : (ok ? `✅ Acertou (${letters[u]})` : `❌ Marcou ${letters[u]} · Correta: ${letters[q.answer]}`)}
+                      </span>
+                    </div>
+                    <p class="text-xs sm:text-sm font-semibold">${escapeHTML(q.prompt)}</p>
+                    <p class="text-xs opacity-80 leading-relaxed"><strong>Comentário:</strong> ${escapeHTML(q.explanation)}</p>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `;
+
+        document.getElementById("btnNewSimulado").addEventListener("click", () => {
+          resPanel.classList.add("hidden");
+          document.getElementById("simConfigPanel").classList.remove("hidden");
+        });
       }
-      document.body.removeChild(textarea);
-    }
 
-    function confirmRestoreDefaultBank() {
-      showConfirm(
-        'Restaurar 30 questões originais?',
-        'Isso substituirá alterações feitas no Admin pelas 30 questões padrão da Fatec.',
-        () => {
-          questionsBank = [...DEFAULT_QUESTIONS];
-          saveQuestionsBank();
-          populateSubjectFilter();
-          renderAdminList();
-          showToast('Banco original de 30 questões restaurado!', 'success');
+      /* ---------------------------------------------------------
+         9. ROTEIRO DE ESTUDOS 8 SEMANAS
+      --------------------------------------------------------- */
+      function renderRoadmap() {
+        const container = document.getElementById("roadmapContainer");
+        let totalTasks = 0;
+        let doneTasks = 0;
+
+        ROADMAP_WEEKS.forEach((w) => {
+          w.tasks.forEach((t) => {
+            totalTasks++;
+            if (progress.roadmapDone.includes(t.id)) doneTasks++;
+          });
+        });
+
+        const pct = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+        document.getElementById("roadmapPercentText").textContent = `${pct}%`;
+        document.getElementById("roadmapProgressBar").style.width = `${pct}%`;
+        document.getElementById("roadmapCountText").textContent = `${doneTasks} de ${totalTasks} metas concluídas`;
+
+        container.innerHTML = ROADMAP_WEEKS.map((w) => {
+          const allDone = w.tasks.every((t) => progress.roadmapDone.includes(t.id));
+          return `
+            <div class="kk-card p-5 space-y-3 ${allDone ? "border-emerald-500/50" : ""}">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-md text-xs font-extrabold ${allDone ? "bg-emerald-500/20 text-emerald-400" : "bg-blue-500/20 text-blue-400"}">
+                  Semana ${w.week} ${allDone ? "✓" : ""}
+                </span>
+                <span class="text-[11px] font-semibold opacity-70">${escapeHTML(w.focus)}</span>
+              </div>
+              <h3 class="font-extrabold text-base">${escapeHTML(w.title)}</h3>
+              <div class="space-y-2 pt-1">
+                ${w.tasks.map((t) => {
+                  const checked = progress.roadmapDone.includes(t.id);
+                  return `
+                    <label class="flex items-start gap-2.5 p-2.5 rounded-xl kk-card-subtle cursor-pointer hover:border-blue-500/40 transition-colors">
+                      <input type="checkbox" data-task-id="${t.id}" ${checked ? "checked" : ""} class="mt-0.5 w-4 h-4 accent-blue-600 rounded" />
+                      <span class="text-xs leading-relaxed ${checked ? "line-through opacity-60" : ""}">${escapeHTML(t.text)}</span>
+                    </label>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        container.querySelectorAll("[data-task-id]").forEach((chk) => {
+          chk.addEventListener("change", () => {
+            const id = chk.getAttribute("data-task-id");
+            if (chk.checked) {
+              if (!progress.roadmapDone.includes(id)) progress.roadmapDone.push(id);
+              showToast("Meta concluída!", "Seu cronograma Vestibulares foi atualizado.", "success");
+            } else {
+              progress.roadmapDone = progress.roadmapDone.filter((x) => x !== id);
+            }
+            saveProgress();
+            renderRoadmap();
+          });
+        });
+      }
+
+      /* ---------------------------------------------------------
+         10. ANALYTICS & DESEMPENHO
+      --------------------------------------------------------- */
+      function renderAnalytics() {
+        const entries = Object.entries(progress.answered);
+        const solved = entries.length;
+        const correct = entries.filter(([, v]) => v.correct).length;
+        const acc = solved > 0 ? Math.round((correct / solved) * 100) : 0;
+
+        document.getElementById("kpiSolved").textContent = solved;
+        document.getElementById("kpiCorrectSub").textContent = `${correct} acertos · ${solved - correct} erros`;
+        document.getElementById("kpiAccuracy").textContent = `${acc}%`;
+
+        const streakDays = progress.streak || 1;
+        document.getElementById("kpiLevel").textContent = `${streakDays} ${streakDays === 1 ? "dia seguido" : "dias seguidos"}`;
+        document.getElementById("kpiSimCountDetail").textContent = `${progress.simHistory.length} simulados concluídos`;
+
+        const mapBySub = {};
+        questions.forEach((q) => {
+          if (!mapBySub[q.subject]) mapBySub[q.subject] = { total: 0, answered: 0, hits: 0 };
+          mapBySub[q.subject].total++;
+          const ans = progress.answered[q.id];
+          if (ans) {
+            mapBySub[q.subject].answered++;
+            if (ans.correct) mapBySub[q.subject].hits++;
+          }
+        });
+
+        let bestSub = "—";
+        let bestRate = -1;
+        Object.entries(mapBySub).forEach(([sub, st]) => {
+          if (st.answered > 0) {
+            const rate = Math.round((st.hits / st.answered) * 100);
+            if (rate > bestRate) {
+              bestRate = rate;
+              bestSub = sub;
+            }
+          }
+        });
+
+        document.getElementById("kpiBestSubject").textContent = bestSub;
+        document.getElementById("kpiBestSubjectRate").textContent = bestRate >= 0 ? `${bestRate}% de aproveitamento` : "Resolva questões para calcular";
+
+        const barsBox = document.getElementById("subjectChartBars");
+        barsBox.innerHTML = Object.entries(mapBySub).map(([sub, st]) => {
+          const pct = st.answered > 0 ? Math.round((st.hits / st.answered) * 100) : 0;
+          return `
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold">
+                <span>${escapeHTML(sub)}</span>
+                <span class="opacity-80">${st.hits}/${st.answered} respondidas (${pct}%)</span>
+              </div>
+              <div class="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-blue-600 to-amber-500 transition-all duration-500" style="width:${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        const badges = [
+          { icon: "🚀", name: "Primeiro Passo", desc: "Resolva 1 questão", unlocked: solved >= 1 },
+          { icon: "🔥", name: "Ritmo Forte", desc: "Resolva 10 questões", unlocked: solved >= 10 },
+          { icon: "🎯", name: "Alta Precisão", desc: "Atingir ≥ 75% de acerto", unlocked: solved >= 5 && acc >= 75 },
+          { icon: "⏱️", name: "Simulado Feito", desc: "Conclua 1 simulado", unlocked: progress.simHistory.length >= 1 }
+        ];
+        document.getElementById("badgesGrid").innerHTML = badges.map((b) => `
+          <div class="p-3.5 rounded-xl kk-card-subtle border ${b.unlocked ? "border-amber-500/50 bg-amber-500/5" : "opacity-45"} space-y-1">
+            <div class="text-2xl">${b.icon}</div>
+            <div class="font-extrabold text-xs">${b.name}</div>
+            <div class="text-[11px] opacity-75">${b.desc}</div>
+          </div>
+        `).join("");
+
+        const tbody = document.getElementById("simHistoryBody");
+        if (!progress.simHistory.length) {
+          tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-xs opacity-65">Nenhum simulado finalizado ainda. Experimente na aba Simulado!</td></tr>`;
+        } else {
+          tbody.innerHTML = progress.simHistory.map((h) => `
+            <tr class="border-b border-blue-500/10 text-xs">
+              <td class="py-2.5 pr-4">${escapeHTML(h.date)}</td>
+              <td class="py-2.5 pr-4 font-bold">${escapeHTML(h.mode)}</td>
+              <td class="py-2.5 pr-4">${escapeHTML(h.score)}</td>
+              <td class="py-2.5 pr-4 font-extrabold ${h.percent >= 70 ? "text-emerald-400" : "text-amber-400"}">${h.percent}%</td>
+              <td class="py-2.5">${escapeHTML(h.durationStr)}</td>
+            </tr>
+          `).join("");
         }
-      );
-    }
+      }
 
-    // Inicia ao carregar a janela
-    window.addEventListener('DOMContentLoaded', initApp);
+      /* ---------------------------------------------------------
+         11. ADMIN
+      --------------------------------------------------------- */
+      function renderAdminList() {
+        const list = document.getElementById("adminQuestionsList");
+        list.innerHTML = questions.slice().reverse().map((q) => `
+          <div class="p-3.5 rounded-xl kk-card-subtle flex items-start justify-between gap-3">
+            <div class="space-y-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                <span class="px-2 py-0.5 rounded bg-blue-500/25 text-blue-400 font-bold">${escapeHTML(q.subject)}</span>
+                <span class="opacity-70">${escapeHTML(q.exam)}</span>
+                ${q.isCustom ? `<span class="px-2 py-0.5 rounded bg-amber-500/25 text-amber-400 font-bold">Customizada</span>` : ""}
+              </div>
+              <p class="text-xs font-semibold line-clamp-2">${escapeHTML(q.prompt)}</p>
+            </div>
+            ${q.isCustom ? `
+              <button type="button" data-del-q="${q.id}" class="px-2.5 py-1 rounded-lg bg-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/30 shrink-0">
+                Excluir
+              </button>
+            ` : `<span class="text-[11px] opacity-45 shrink-0">Oficial</span>`}
+          </div>
+        `).join("");
+
+        list.querySelectorAll("[data-del-q]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-del-q");
+            questions = questions.filter((item) => item.id !== id);
+            saveCustomQuestions();
+            updateGlobalHUD();
+            renderAdminList();
+            showToast("Questão removida", "O acervo foi atualizado.", "info");
+          });
+        });
+      }
+
+      /* ---------------------------------------------------------
+         12. PERFIL
+      --------------------------------------------------------- */
+      function renderProfileView() {
+        if (currentUser) {
+          document.getElementById("profileBigAvatar").textContent = getInitials(currentUser.name);
+          document.getElementById("profileHeadingName").textContent = currentUser.name;
+          document.getElementById("profileHeadingEmail").textContent = `${currentUser.email} · Conta Ativa`;
+          document.getElementById("profName").value = currentUser.name;
+          document.getElementById("profCourse").value = currentUser.course || "Análise e Desenvolvimento de Sistemas (ADS)";
+          document.getElementById("profCampus").value = currentUser.campus || "";
+          document.getElementById("profDailyGoal").value = currentUser.dailyGoal || 10;
+        } else {
+          document.getElementById("profileBigAvatar").textContent = "VS";
+          document.getElementById("profileHeadingName").textContent = "Estudante Visitante";
+          document.getElementById("profileHeadingEmail").textContent = "Faça login ou salve abaixo para criar seu perfil local";
+          document.getElementById("profName").value = "Candidato Vestibulares";
+        }
+      }
+
+      /* ---------------------------------------------------------
+         13. INICIALIZAÇÃO
+      --------------------------------------------------------- */
+      window.addEventListener("DOMContentLoaded", () => {
+        loadState();
+        updateGlobalHUD();
+        renderMiniQuiz();
+        populateFilterOptions();
+        applyTrainFilters(true);
+        renderRoadmap();
+        renderAnalytics();
+        renderAdminList();
+
+        document.addEventListener("click", (e) => {
+          const navBtn = e.target.closest("[data-nav]");
+          if (navBtn) {
+            e.preventDefault();
+            navigateTo(navBtn.getAttribute("data-nav"));
+          }
+        });
+
+        document.getElementById("btnMobileMenu").addEventListener("click", () => {
+          document.getElementById("mobileMenuDrawer").classList.toggle("hidden");
+        });
+
+        document.getElementById("btnResetMiniQuiz").addEventListener("click", () => {
+          miniQuizIndex = 0;
+          miniQuizAnswers = {};
+          renderMiniQuiz();
+        });
+
+        ["filterSubject", "filterExam", "filterDifficulty", "filterStatus"].forEach((id) => {
+          document.getElementById(id).addEventListener("change", () => applyTrainFilters(true));
+        });
+        document.getElementById("filterSearch").addEventListener("input", () => applyTrainFilters(true));
+
+        document.getElementById("btnQuickReviewWrong").addEventListener("click", () => {
+          document.getElementById("filterStatus").value = "WRONG";
+          applyTrainFilters(true);
+        });
+
+        document.getElementById("btnClearFilters").addEventListener("click", () => {
+          document.getElementById("filterSubject").value = "ALL";
+          document.getElementById("filterExam").value = "ALL";
+          document.getElementById("filterDifficulty").value = "ALL";
+          document.getElementById("filterStatus").value = "ALL";
+          document.getElementById("filterSearch").value = "";
+          applyTrainFilters(true);
+        });
+
+        document.addEventListener("keydown", (e) => {
+          const trainActive = document.getElementById("view-treinar").classList.contains("active");
+          const modalOpen = !document.getElementById("authModal").classList.contains("hidden");
+          if (!trainActive || modalOpen) return;
+          if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+
+          const keyMap = { a: 0, b: 1, c: 2, d: 3, e: 4 };
+          const k = e.key.toLowerCase();
+          if (k in keyMap && trainFiltered.length) {
+            const q = trainFiltered[trainCurrentIndex];
+            if (!progress.answered[q.id]) {
+              trainPendingSelection = keyMap[k];
+              renderTrainQuestion();
+            }
+          } else if (e.key === "Enter" && trainFiltered.length) {
+            const q = trainFiltered[trainCurrentIndex];
+            if (!progress.answered[q.id] && trainPendingSelection !== null) {
+              confirmCurrentTrainQuestion();
+            } else if (progress.answered[q.id] && trainCurrentIndex < trainFiltered.length - 1) {
+              trainCurrentIndex++;
+              trainPendingSelection = null;
+              renderTrainQuestion();
+            }
+          }
+        });
+
+        document.querySelectorAll(".sim-mode-card").forEach((card) => {
+          card.addEventListener("click", () => {
+            document.querySelectorAll(".sim-mode-card").forEach((c) => {
+              c.classList.remove("border-blue-500", "bg-blue-500/15");
+              c.classList.add("border-transparent");
+            });
+            card.classList.remove("border-transparent");
+            card.classList.add("border-blue-500", "bg-blue-500/15");
+            card.querySelector("input").checked = true;
+          });
+        });
+
+        document.getElementById("btnStartSimulado").addEventListener("click", startSimulado);
+        document.getElementById("btnFinishSimulado").addEventListener("click", () => finishSimulado(false));
+        document.getElementById("btnAbortSimulado").addEventListener("click", () => {
+          if (simState.timerId) clearInterval(simState.timerId);
+          simState.active = false;
+          document.getElementById("simActivePanel").classList.add("hidden");
+          document.getElementById("simConfigPanel").classList.remove("hidden");
+          showToast("Simulado cancelado", "Você voltou para a tela de configuração.", "info");
+        });
+
+        document.getElementById("btnExportStats").addEventListener("click", () => {
+          const solved = Object.keys(progress.answered).length;
+          const hits = Object.values(progress.answered).filter((a) => a.correct).length;
+          const text = [
+            "=== RELATÓRIO DE DESEMPENHO · KLICK KWIZ VESTIBULARES ===",
+            `Data: ${new Date().toLocaleString("pt-BR")}`,
+            `Estudante: ${currentUser ? currentUser.name : "Visitante"}`,
+            `Questões Resolvidas: ${solved}`,
+            `Acertos: ${hits} (${solved ? Math.round((hits / solved) * 100) : 0}%)`,
+            `Ofensiva: ${progress.streak || 1} dia(s)`,
+            `Simulados Concluídos: ${progress.simHistory.length}`
+          ].join("\n");
+
+          const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "relatorio-klick-kwiz-vestibulares.txt";
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast("Relatório exportado!", "Arquivo .txt baixado com sucesso.", "success");
+        });
+
+        document.getElementById("btnResetStats").addEventListener("click", () => {
+          progress = JSON.parse(JSON.stringify(defaultProgress));
+          saveProgress();
+          renderAnalytics();
+          renderRoadmap();
+          applyTrainFilters(true);
+          showToast("Histórico zerado", "Suas estatísticas foram reiniciadas.", "info");
+        });
+
+        document.getElementById("adminNewQuestionForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          const newQ = {
+            id: "custom_" + Date.now(),
+            subject: document.getElementById("admSubject").value,
+            exam: document.getElementById("admExam").value.trim(),
+            difficulty: document.getElementById("admDifficulty").value,
+            context: document.getElementById("admContext").value.trim(),
+            prompt: document.getElementById("admPrompt").value.trim(),
+            options: [
+              document.getElementById("admOpt0").value.trim(),
+              document.getElementById("admOpt1").value.trim(),
+              document.getElementById("admOpt2").value.trim(),
+              document.getElementById("admOpt3").value.trim(),
+              document.getElementById("admOpt4").value.trim()
+            ],
+            answer: Number(document.getElementById("admAnswer").value),
+            explanation: document.getElementById("admExplanation").value.trim(),
+            isCustom: true
+          };
+
+          questions.push(newQ);
+          saveCustomQuestions();
+          updateGlobalHUD();
+          renderAdminList();
+          e.target.reset();
+          document.getElementById("admExam").value = "Vestibular 2026/2";
+          showToast("Questão cadastrada! 🎉", "Já está disponível na aba Treinar e nos Simulados.", "success");
+        });
+
+        document.getElementById("profileForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          currentUser = {
+            name: document.getElementById("profName").value.trim(),
+            email: currentUser?.email || "estudante@vestibulares.com.br",
+            course: document.getElementById("profCourse").value,
+            campus: document.getElementById("profCampus").value.trim(),
+            dailyGoal: Number(document.getElementById("profDailyGoal").value) || 10
+          };
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(currentUser));
+          updateGlobalHUD();
+          renderProfileView();
+          showToast("Perfil atualizado!", "Suas preferências de curso e meta foram salvas.", "success");
+        });
+
+        document.getElementById("contactForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          e.target.reset();
+          showToast("Mensagem enviada!", "Obrigado pelo contato com a equipe Klick Kwiz.", "success");
+        });
+
+        const authModal = document.getElementById("authModal");
+        const loginForm = document.getElementById("loginForm");
+        const registerForm = document.getElementById("registerForm");
+        const tabLogin = document.getElementById("tabLogin");
+        const tabRegister = document.getElementById("tabRegister");
+
+        document.getElementById("btnOpenAuth").addEventListener("click", () => {
+          authModal.classList.remove("hidden");
+          authModal.classList.add("flex");
+        });
+
+        document.getElementById("btnCloseAuth").addEventListener("click", () => {
+          authModal.classList.add("hidden");
+          authModal.classList.remove("flex");
+        });
+
+        tabLogin.addEventListener("click", () => {
+          tabLogin.classList.add("bg-blue-600", "text-white");
+          tabRegister.classList.remove("bg-blue-600", "text-white");
+          loginForm.classList.remove("hidden");
+          registerForm.classList.add("hidden");
+        });
+
+        tabRegister.addEventListener("click", () => {
+          tabRegister.classList.add("bg-blue-600", "text-white");
+          tabLogin.classList.remove("bg-blue-600", "text-white");
+          registerForm.classList.remove("hidden");
+          loginForm.classList.add("hidden");
+        });
+
+        document.getElementById("btnFillDemo").addEventListener("click", () => {
+          currentUser = {
+            name: "Lucas Almeida",
+            email: "lucas.vestibulares@demo.com",
+            course: "Análise e Desenvolvimento de Sistemas (ADS)",
+            campus: "Campus Principal",
+            dailyGoal: 10
+          };
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(currentUser));
+          authModal.classList.add("hidden");
+          authModal.classList.remove("flex");
+          updateGlobalHUD();
+          showToast("Bem-vindo, Lucas!", "Conta demonstrativa conectada com sucesso.", "success");
+        });
+
+        loginForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const email = document.getElementById("loginEmail").value.trim();
+          const nameFromEmail = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+          currentUser = {
+            name: nameFromEmail || "Estudante Vestibulares",
+            email,
+            course: "Análise e Desenvolvimento de Sistemas (ADS)",
+            campus: "Geral",
+            dailyGoal: 10
+          };
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(currentUser));
+          authModal.classList.add("hidden");
+          authModal.classList.remove("flex");
+          updateGlobalHUD();
+          showToast("Sessão iniciada!", `Bem-vindo(a), ${currentUser.name}.`, "success");
+        });
+
+        registerForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          currentUser = {
+            name: document.getElementById("regName").value.trim(),
+            email: document.getElementById("regEmail").value.trim(),
+            course: document.getElementById("regCourse").value,
+            campus: "Geral",
+            dailyGoal: 10
+          };
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(currentUser));
+          authModal.classList.add("hidden");
+          authModal.classList.remove("flex");
+          updateGlobalHUD();
+          showToast("Conta criada com sucesso! 🚀", `Foco total na aprovação em ${currentUser.course}.`, "success");
+        });
+
+        document.getElementById("btnLogout").addEventListener("click", () => {
+          currentUser = null;
+          localStorage.removeItem(STORAGE_KEYS.USER);
+          updateGlobalHUD();
+          navigateTo("inicio");
+          showToast("Sessão encerrada", "Você voltou para o modo visitante.", "info");
+        });
+      });
+    })();
   </script>
 </body>
 </html>
